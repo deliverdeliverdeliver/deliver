@@ -1,29 +1,643 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meine Website</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deliverdeliverdeliver.de</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: white;
-            text-align: center;
-            padding-top: 100px;
-        }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        h1 {
-            font-size: 50px;
-        }
-    </style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Tahoma, Verdana, Arial, sans-serif;
+      background:
+        linear-gradient(rgba(0, 70, 160, 0.25), rgba(0, 70, 160, 0.25)),
+        linear-gradient(#4da6ff, #1d66c1 55%, #4c9b2b 56%, #226d1f);
+      color: #111;
+      overflow-x: hidden;
+    }
+
+    .desktop {
+      min-height: 100vh;
+      padding: 40px 20px 90px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .window {
+      width: min(900px, 96vw);
+      border: 3px solid #1d4f9f;
+      border-radius: 8px 8px 3px 3px;
+      overflow: hidden;
+      background: #ece9d8;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.45);
+    }
+
+    .titlebar {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7px 0 12px;
+      color: white;
+      font-weight: bold;
+      background: linear-gradient(#2b84eb, #0b54bd 60%, #0646a6);
+      text-shadow: 1px 1px #00347b;
+    }
+
+    .controls {
+      display: flex;
+      gap: 4px;
+    }
+
+    .control {
+      width: 26px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      border: 1px solid white;
+      border-radius: 3px;
+      background: linear-gradient(#72aaf0, #286bc2);
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .close {
+      background: linear-gradient(#f58d74, #d73322);
+    }
+
+    .toolbar {
+      padding: 8px;
+      border-bottom: 1px solid #999;
+      background: #ece9d8;
+      font-size: 14px;
+    }
+
+    .addressbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px;
+      border-bottom: 1px solid #aaa;
+      background: #ece9d8;
+    }
+
+    .address {
+      flex: 1;
+      background: white;
+      border: 1px solid #777;
+      padding: 6px 8px;
+      font-family: Arial, sans-serif;
+    }
+
+    .page {
+      background: white;
+      min-height: 560px;
+      padding: 25px;
+      text-align: center;
+      background-image:
+        linear-gradient(rgba(0,0,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,255,0.025) 1px, transparent 1px);
+      background-size: 18px 18px;
+    }
+
+    .marquee {
+      color: #ff0000;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 10s linear infinite;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+
+    h1 {
+      font-family: "Comic Sans MS", cursive;
+      color: #0033cc;
+      font-size: clamp(34px, 7vw, 72px);
+      margin: 12px 0 5px;
+      text-shadow: 3px 3px #00ffff;
+    }
+
+    .subtitle {
+      color: #cc00cc;
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .nav {
+      margin: 25px 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button {
+      font-family: Tahoma, Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .retro-btn {
+      padding: 8px 15px;
+      border: 2px outset #ddd;
+      background: #c0c0c0;
+      font-weight: bold;
+    }
+
+    .retro-btn:active {
+      border-style: inset;
+    }
+
+    .construction {
+      margin: 25px auto;
+      width: min(600px, 95%);
+      padding: 12px;
+      border: 4px dashed #000;
+      background: repeating-linear-gradient(
+        45deg,
+        #ffd800 0,
+        #ffd800 18px,
+        #000 18px,
+        #000 36px
+      );
+    }
+
+    .construction span {
+      display: inline-block;
+      background: white;
+      padding: 8px 18px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .content-box {
+      margin: 25px auto;
+      max-width: 650px;
+      border: 2px solid #3333cc;
+      background: #ffffcc;
+      padding: 20px;
+      box-shadow: 6px 6px 0 #999;
+    }
+
+    .counter {
+      margin: 22px 0;
+      font-family: "Courier New", monospace;
+      font-size: 20px;
+    }
+
+    .digits {
+      display: inline-block;
+      background: #000;
+      color: #00ff00;
+      padding: 5px 9px;
+      letter-spacing: 4px;
+      border: 3px inset #ccc;
+    }
+
+    .blink {
+      animation: blink 0.8s steps(1) infinite;
+      color: red;
+      font-weight: bold;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .links {
+      margin-top: 30px;
+      font-size: 14px;
+    }
+
+    .links a {
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 35px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .popup {
+      position: fixed;
+      width: min(360px, 90vw);
+      background: #ece9d8;
+      border: 3px solid #1759ba;
+      box-shadow: 8px 8px 25px rgba(0,0,0,0.5);
+      border-radius: 7px 7px 2px 2px;
+      z-index: 50;
+      display: none;
+    }
+
+    .popup.show {
+      display: block;
+    }
+
+    .popup-title {
+      background: linear-gradient(#3185e5, #0d55b7);
+      color: white;
+      padding: 7px 10px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .popup-content {
+      padding: 22px;
+      text-align: center;
+    }
+
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(#2d7de1, #1553ad);
+      z-index: 30;
+    }
+
+    .start {
+      height: 100%;
+      padding: 0 22px;
+      border: none;
+      border-radius: 0 16px 16px 0;
+      background: linear-gradient(#4eae4d, #227522);
+      color: white;
+      font-weight: bold;
+      font-style: italic;
+      font-size: 18px;
+    }
+
+    .task {
+      margin-left: 10px;
+      padding: 8px 18px;
+      color: white;
+      border: 1px solid #0a408f;
+      background: #1a63bd;
+    }
+
+    .clock {
+      margin-left: auto;
+      color: white;
+      padding: 0 18px;
+      font-size: 14px;
+    }
+
+    .secret {
+      margin-top: 20px;
+      color: #fff;
+      cursor: default;
+      user-select: none;
+    }
+
+    @media (max-width: 600px) {
+      .desktop {
+        padding: 15px 6px 70px;
+      }
+
+      .page {
+        padding: 18px 10px;
+      }
+
+      .toolbar {
+        font-size: 11px;
+      }
+
+      .task {
+        display: none;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-    <h1>Meine Website ist online!</h1>
-    <p>Meine erste eigene HTML-Website.</p>
+  <div class="desktop">
+
+    <div class="window">
+
+      <div class="titlebar">
+        <span>Internet Explorer - deliverdeliverdeliver.de</span>
+
+        <div class="controls">
+          <div class="control">_</div>
+          <div class="control">□</div>
+          <div class="control close" onclick="fakeClose()">×</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        ← Zurück &nbsp;&nbsp; → Vor &nbsp;&nbsp; ⟳ Aktualisieren &nbsp;&nbsp; 🏠 Startseite
+      </div>
+
+      <div class="addressbar">
+        <strong>Adresse</strong>
+        <div class="address">http://www.deliverdeliverdeliver.de</div>
+        <button class="retro-btn">Los</button>
+      </div>
+
+      <main class="page">
+
+        <div class="marquee">
+          <span>★★★ WILLKOMMEN IM INTERNET ★★★ DIESE WEBSITE IST EXTREM COOL ★★★</span>
+        </div>
+
+        <h1>DELIVER<br>DELIVER<br>DELIVER</h1>
+
+        <div class="subtitle">
+          Willkommen auf meiner Homepage!!!
+        </div>
+
+        <div class="nav">
+          <button class="retro-btn" onclick="showPopup('home')">HOME</button>
+          <button class="retro-btn" onclick="showPopup('about')">ÜBER MICH</button>
+          <button class="retro-btn" onclick="showPopup('guestbook')">GÄSTEBUCH</button>
+          <button class="retro-btn" onclick="showPopup('downloads')">DOWNLOADS</button>
+          <button class="retro-btn" onclick="showPopup('secret')">???</button>
+        </div>
+
+        <div class="construction">
+          <span>🚧 UNDER CONSTRUCTION 🚧</span>
+        </div>
+
+        <div class="content-box">
+          <h2>Willkommen, Internetreisender!</h2>
+
+          <p>
+            Du hast einen geheimen Ort im World Wide Web gefunden.
+          </p>
+
+          <p>
+            Diese Seite wurde mit modernster Internet-Technologie aus dem Jahre 2003 gebaut.
+          </p>
+
+          <p class="blink">
+            !!! BITTE NICHT AUF DIE VERDÄCHTIGEN BUTTONS KLICKEN !!!
+          </p>
+        </div>
+
+        <div class="counter">
+          Du bist Besucher Nummer:
+          <span class="digits" id="visitorCounter">00001337</span>
+        </div>
+
+        <button class="retro-btn" onclick="randomEvent()">
+          DELIVER SOMETHING
+        </button>
+
+        <div class="links">
+          <p>
+            <a onclick="showPopup('winner')">KLICK HIER UM EINEN GRATIS iPOD ZU GEWINNEN!!!</a>
+          </p>
+
+          <p>
+            <a onclick="showPopup('virus')">Kostenloser Bildschirmschoner.exe</a>
+          </p>
+        </div>
+
+        <div class="footer">
+          © 2003-2026 deliverdeliverdeliver.de
+          <br>
+          Best viewed with Internet Explorer 6 at 800×600
+          <br><br>
+          Made with HTML, pure skill and questionable decisions.
+        </div>
+
+        <div class="secret" onclick="secretMode()">
+          .
+        </div>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <div class="popup" id="popup">
+    <div class="popup-title">
+      <span id="popupTitle">Hinweis</span>
+      <span style="cursor:pointer" onclick="closePopup()">×</span>
+    </div>
+
+    <div class="popup-content" id="popupContent"></div>
+  </div>
+
+  <div class="taskbar">
+    <button class="start" onclick="showPopup('start')">start</button>
+    <div class="task">Internet Explorer</div>
+    <div class="clock" id="clock"></div>
+  </div>
+
+
+<script>
+
+  const popup = document.getElementById("popup");
+
+  function showPopup(type) {
+
+    const title = document.getElementById("popupTitle");
+    const content = document.getElementById("popupContent");
+
+    const data = {
+
+      home: [
+        "Startseite",
+        "Du bist bereits auf der Startseite. Das Internet ist manchmal kompliziert."
+      ],
+
+      about: [
+        "Über mich",
+        "Hallo. Ich bin eine hochmoderne Website aus dem Jahre 2003."
+      ],
+
+      guestbook: [
+        "Gästebuch",
+        "Gästebuch derzeit außer Betrieb.<br><br>Grund: Zu viele extrem coole Einträge."
+      ],
+
+      downloads: [
+        "Downloads",
+        "Download wird vorbereitet...<br><br><button class='retro-btn' onclick='fakeDownload()'>super_cool_file.exe</button>"
+      ],
+
+      secret: [
+        "TOP SECRET",
+        "Du hast den geheimen Bereich gefunden.<br><br>Leider ist hier nichts."
+      ],
+
+      winner: [
+        "HERZLICHEN GLÜCKWUNSCH!!!",
+        "<b>DU BIST BESUCHER 1.000.000!</b><br><br>Du hast absolut nichts gewonnen."
+      ],
+
+      virus: [
+        "Windows Security Alert",
+        "Keine Sorge.<br><br>Das ist nur ein Fake-Popup.<br><br>Wahrscheinlich."
+      ],
+
+      start: [
+        "Startmenü",
+        "Programme<br><br>Internet Explorer<br>Paint<br>Minesweeper<br>ICQ<br>Winamp"
+      ]
+    };
+
+    title.innerHTML = data[type][0];
+    content.innerHTML = data[type][1];
+
+    popup.style.left =
+      Math.max(10, Math.random() * (window.innerWidth - 380)) + "px";
+
+    popup.style.top =
+      Math.max(10, Math.random() * (window.innerHeight - 250)) + "px";
+
+    popup.classList.add("show");
+  }
+
+
+  function closePopup() {
+    popup.classList.remove("show");
+  }
+
+
+  function fakeClose() {
+    showPopup("virus");
+  }
+
+
+  function fakeDownload() {
+
+    document.getElementById("popupContent").innerHTML =
+      "Download läuft...<br><br>████████████ 99%<br><br>Fehler: Internet zu langsam.";
+
+  }
+
+
+  function randomEvent() {
+
+    const events = [
+
+      () => {
+        document.body.style.filter =
+          "hue-rotate(" + Math.floor(Math.random() * 360) + "deg)";
+      },
+
+      () => {
+        showPopup("winner");
+      },
+
+      () => {
+        document.body.style.transform = "rotate(1deg)";
+
+        setTimeout(() => {
+          document.body.style.transform = "rotate(0deg)";
+        }, 500);
+      },
+
+      () => {
+        alert("DELIVERY SUCCESSFUL");
+      },
+
+      () => {
+        document.querySelector("h1").innerHTML =
+          "YOU HAVE BEEN<br>DELIVERED";
+      }
+
+    ];
+
+    const event =
+      events[Math.floor(Math.random() * events.length)];
+
+    event();
+  }
+
+
+  function secretMode() {
+
+    document.body.style.background = "#000";
+
+    document.querySelector(".page").innerHTML = `
+      <div style="
+        background:black;
+        color:#00ff00;
+        min-height:600px;
+        padding:50px;
+        font-family:Courier New;
+        text-align:left;
+        font-size:18px;
+      ">
+
+      DELIVER SYSTEM v1.0<br><br>
+
+      ACCESSING SERVER...<br>
+      CONNECTION ESTABLISHED.<br><br>
+
+      USER DETECTED.<br><br>
+
+      WELCOME.<br><br>
+
+      <span class="blink">
+      THEY SHOULD NOT HAVE LET YOU FIND THIS.
+      </span>
+
+      </div>
+    `;
+  }
+
+
+  function updateClock() {
+
+    const now = new Date();
+
+    document.getElementById("clock").innerText =
+      now.toLocaleTimeString("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock();
+
+
+  let counter = Number(localStorage.getItem("visitorCounter"));
+
+  if (!counter) {
+    counter = 1337;
+  }
+
+  counter++;
+
+  localStorage.setItem("visitorCounter", counter);
+
+  document.getElementById("visitorCounter").innerText =
+    String(counter).padStart(8, "0");
+
+</script>
 
 </body>
 </html>

@@ -1,641 +1,1626 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>deliverdeliverdeliver.de</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<title>DELIVER DELIVER DELIVER</title>
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Tahoma, Verdana, Arial, sans-serif;
-      background:
-        linear-gradient(rgba(0, 70, 160, 0.25), rgba(0, 70, 160, 0.25)),
-        linear-gradient(#4da6ff, #1d66c1 55%, #4c9b2b 56%, #226d1f);
-      color: #111;
-      overflow-x: hidden;
-    }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-    .desktop {
-      min-height: 100vh;
-      padding: 40px 20px 90px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
+:root {
+    --bg: #161616;
+    --panel: #d4d0c8;
+    --dark: #101010;
+    --blue: #000080;
+    --green: #00aa00;
+    --border-light: #ffffff;
+    --border-dark: #404040;
+}
 
-    .window {
-      width: min(900px, 96vw);
-      border: 3px solid #1d4f9f;
-      border-radius: 8px 8px 3px 3px;
-      overflow: hidden;
-      background: #ece9d8;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.45);
-    }
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.018) 0px,
+            rgba(255,255,255,0.018) 1px,
+            transparent 1px,
+            transparent 4px
+        ),
+        #101010;
 
-    .titlebar {
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 7px 0 12px;
-      color: white;
-      font-weight: bold;
-      background: linear-gradient(#2b84eb, #0b54bd 60%, #0646a6);
-      text-shadow: 1px 1px #00347b;
-    }
+    font-family: "Courier New", monospace;
+    color: white;
+    overflow-x: hidden;
+}
 
-    .controls {
-      display: flex;
-      gap: 4px;
-    }
+button,
+input {
+    font-family: "Courier New", monospace;
+}
 
-    .control {
-      width: 26px;
-      height: 25px;
-      display: grid;
-      place-items: center;
-      border: 1px solid white;
-      border-radius: 3px;
-      background: linear-gradient(#72aaf0, #286bc2);
-      color: white;
-      cursor: pointer;
-      user-select: none;
-    }
 
-    .close {
-      background: linear-gradient(#f58d74, #d73322);
-    }
+/* =========================
+   LOGIN
+========================= */
 
-    .toolbar {
-      padding: 8px;
-      border-bottom: 1px solid #999;
-      background: #ece9d8;
-      font-size: 14px;
-    }
+#authScreen {
+    position: fixed;
+    inset: 0;
+    background: #101010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
 
-    .addressbar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px;
-      border-bottom: 1px solid #aaa;
-      background: #ece9d8;
-    }
+.auth-window {
+    width: min(430px, 92vw);
+    background: var(--panel);
+    color: black;
+    border-top: 3px solid white;
+    border-left: 3px solid white;
+    border-right: 3px solid #444;
+    border-bottom: 3px solid #444;
+    box-shadow: 12px 12px 0 black;
+}
 
-    .address {
-      flex: 1;
-      background: white;
-      border: 1px solid #777;
-      padding: 6px 8px;
-      font-family: Arial, sans-serif;
-    }
+.titlebar {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    color: white;
+    font-weight: bold;
+    padding: 8px 10px;
+    letter-spacing: 1px;
+}
 
-    .page {
-      background: white;
-      min-height: 560px;
-      padding: 25px;
-      text-align: center;
-      background-image:
-        linear-gradient(rgba(0,0,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,255,0.025) 1px, transparent 1px);
-      background-size: 18px 18px;
-    }
+.auth-content {
+    padding: 28px;
+}
 
-    .marquee {
-      color: #ff0000;
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 20px;
-      white-space: nowrap;
-      overflow: hidden;
-    }
+.logo {
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    margin-bottom: 25px;
+    line-height: 1;
+}
 
-    .marquee span {
-      display: inline-block;
-      padding-left: 100%;
-      animation: marquee 10s linear infinite;
-    }
+.logo small {
+    display: block;
+    font-size: 12px;
+    margin-top: 10px;
+}
 
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to { transform: translateX(-100%); }
-    }
+label {
+    display: block;
+    margin-top: 13px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
 
-    h1 {
-      font-family: "Comic Sans MS", cursive;
-      color: #0033cc;
-      font-size: clamp(34px, 7vw, 72px);
-      margin: 12px 0 5px;
-      text-shadow: 3px 3px #00ffff;
-    }
+input {
+    width: 100%;
+    border: 2px inset white;
+    padding: 10px;
+    font-size: 16px;
+    background: white;
+}
 
-    .subtitle {
-      color: #cc00cc;
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
+.auth-buttons {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
 
-    .nav {
-      margin: 25px 0;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
+.retro-button {
+    border: 3px outset #eee;
+    background: #c0c0c0;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-    button {
-      font-family: Tahoma, Arial, sans-serif;
-      cursor: pointer;
-    }
+.retro-button:active {
+    border-style: inset;
+}
 
-    .retro-btn {
-      padding: 8px 15px;
-      border: 2px outset #ddd;
-      background: #c0c0c0;
-      font-weight: bold;
-    }
+.auth-status {
+    min-height: 40px;
+    margin-top: 18px;
+    padding: 8px;
+    font-size: 13px;
+    background: #eee;
+    border: 2px inset white;
+}
 
-    .retro-btn:active {
-      border-style: inset;
-    }
 
-    .construction {
-      margin: 25px auto;
-      width: min(600px, 95%);
-      padding: 12px;
-      border: 4px dashed #000;
-      background: repeating-linear-gradient(
-        45deg,
-        #ffd800 0,
-        #ffd800 18px,
-        #000 18px,
-        #000 36px
-      );
-    }
+/* =========================
+   GAME
+========================= */
 
-    .construction span {
-      display: inline-block;
-      background: white;
-      padding: 8px 18px;
-      font-size: 20px;
-      font-weight: bold;
-    }
+#game {
+    display: none;
+    min-height: 100vh;
+}
 
-    .content-box {
-      margin: 25px auto;
-      max-width: 650px;
-      border: 2px solid #3333cc;
-      background: #ffffcc;
-      padding: 20px;
-      box-shadow: 6px 6px 0 #999;
-    }
+.topbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 72px;
+    background: #c0c0c0;
+    border-bottom: 3px solid #fff;
+    box-shadow: 0 4px 0 #444;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 18px;
+    z-index: 100;
+}
 
-    .counter {
-      margin: 22px 0;
-      font-family: "Courier New", monospace;
-      font-size: 20px;
-    }
+.icon-button {
+    width: 54px;
+    height: 54px;
+    border: 3px outset #eee;
+    background: #c0c0c0;
+    cursor: pointer;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    .digits {
-      display: inline-block;
-      background: #000;
-      color: #00ff00;
-      padding: 5px 9px;
-      letter-spacing: 4px;
-      border: 3px inset #ccc;
-    }
+.icon-button:active {
+    border-style: inset;
+}
 
-    .blink {
-      animation: blink 0.8s steps(1) infinite;
-      color: red;
-      font-weight: bold;
-    }
+.game-center {
+    min-height: 100vh;
+    padding: 120px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
+.site-title {
+    text-align: center;
+    font-size: clamp(28px, 5vw, 52px);
+    letter-spacing: 4px;
+    margin-bottom: 50px;
+    text-shadow:
+        4px 4px #000080,
+        7px 7px #000;
+}
 
-    .links {
-      margin-top: 30px;
-      font-size: 14px;
-    }
+.package-area {
+    position: relative;
+    text-align: center;
+}
 
-    .links a {
-      color: blue;
-      text-decoration: underline;
-      cursor: pointer;
-    }
+.package {
+    width: 210px;
+    height: 180px;
+    position: relative;
+    cursor: pointer;
+    image-rendering: pixelated;
+    transition: transform 0.08s;
+    user-select: none;
+}
 
-    .footer {
-      margin-top: 35px;
-      font-size: 12px;
-      color: #555;
-    }
+.package:active {
+    transform: translateY(8px) scale(.96);
+}
 
-    .popup {
-      position: fixed;
-      width: min(360px, 90vw);
-      background: #ece9d8;
-      border: 3px solid #1759ba;
-      box-shadow: 8px 8px 25px rgba(0,0,0,0.5);
-      border-radius: 7px 7px 2px 2px;
-      z-index: 50;
-      display: none;
-    }
+.box-body {
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    top: 48px;
+    bottom: 0;
+    background: #b56c2d;
+    border: 8px solid #693a15;
+    box-shadow:
+        inset 8px 8px #d99450,
+        inset -8px -8px #804519,
+        10px 10px 0 #000;
+}
 
-    .popup.show {
-      display: block;
-    }
+.box-lid {
+    position: absolute;
+    top: 22px;
+    left: 0;
+    width: 210px;
+    height: 62px;
+    background: #c97a35;
+    border: 8px solid #693a15;
+    box-shadow:
+        inset 8px 8px #e4a05c,
+        inset -8px -8px #8b4c1d;
+    z-index: 2;
+}
 
-    .popup-title {
-      background: linear-gradient(#3185e5, #0d55b7);
-      color: white;
-      padding: 7px 10px;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-    }
+.tape {
+    position: absolute;
+    width: 38px;
+    top: 0;
+    bottom: 0;
+    left: 78px;
+    background: #e0c17b;
+    border-left: 4px solid #9f7d3d;
+    border-right: 4px solid #9f7d3d;
+}
 
-    .popup-content {
-      padding: 22px;
-      text-align: center;
-    }
+.package-label {
+    position: absolute;
+    z-index: 5;
+    background: white;
+    color: black;
+    padding: 5px 8px;
+    left: 58px;
+    top: 98px;
+    font-size: 13px;
+    border: 2px solid black;
+    transform: rotate(-4deg);
+}
 
-    .taskbar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 46px;
-      display: flex;
-      align-items: center;
-      background: linear-gradient(#2d7de1, #1553ad);
-      z-index: 30;
-    }
+.click-info {
+    margin-top: 40px;
+    text-align: center;
+}
 
-    .start {
-      height: 100%;
-      padding: 0 22px;
-      border: none;
-      border-radius: 0 16px 16px 0;
-      background: linear-gradient(#4eae4d, #227522);
-      color: white;
-      font-weight: bold;
-      font-style: italic;
-      font-size: 18px;
-    }
+.progress-frame {
+    width: min(400px, 85vw);
+    height: 28px;
+    margin: 12px auto;
+    padding: 3px;
+    border: 3px inset white;
+    background: #c0c0c0;
+}
 
-    .task {
-      margin-left: 10px;
-      padding: 8px 18px;
-      color: white;
-      border: 1px solid #0a408f;
-      background: #1a63bd;
-    }
+.progress {
+    height: 100%;
+    width: 0%;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #000080 0px,
+            #000080 15px,
+            #0000aa 15px,
+            #0000aa 18px
+        );
+    transition: width .2s;
+}
 
-    .clock {
-      margin-left: auto;
-      color: white;
-      padding: 0 18px;
-      font-size: 14px;
-    }
 
-    .secret {
-      margin-top: 20px;
-      color: #fff;
-      cursor: default;
-      user-select: none;
-    }
+/* =========================
+   WINDOWS / MODALS
+========================= */
 
-    @media (max-width: 600px) {
-      .desktop {
-        padding: 15px 6px 70px;
-      }
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.72);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
 
-      .page {
-        padding: 18px 10px;
-      }
+.modal-window {
+    width: min(760px, 95vw);
+    max-height: 82vh;
+    overflow: hidden;
+    background: #c0c0c0;
+    color: black;
+    border: 3px outset white;
+    box-shadow: 15px 15px 0 #000;
+}
 
-      .toolbar {
-        font-size: 11px;
-      }
+.modal-title {
+    background: linear-gradient(90deg, #000080, #1084d0);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    padding: 7px;
+    font-weight: bold;
+}
 
-      .task {
-        display: none;
-      }
-    }
-  </style>
+.close {
+    width: 28px;
+    background: #c0c0c0;
+    border: 2px outset white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.modal-content {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(82vh - 40px);
+}
+
+
+/* =========================
+   INVENTORY
+========================= */
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fill, minmax(145px, 1fr));
+    gap: 12px;
+}
+
+.item {
+    border: 3px outset white;
+    background: #ddd;
+    padding: 10px;
+    min-height: 145px;
+    position: relative;
+}
+
+.item-name {
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.item-rarity {
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.item-amount {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    background: black;
+    color: white;
+    padding: 3px 6px;
+}
+
+.common {
+    border-bottom: 8px solid #888;
+}
+
+.uncommon {
+    border-bottom: 8px solid #34a853;
+}
+
+.rare {
+    border-bottom: 8px solid #1a73e8;
+}
+
+.epic {
+    border-bottom: 8px solid #9933cc;
+}
+
+.legendary {
+    border-bottom: 8px solid #ff9800;
+}
+
+.mythic {
+    border-bottom: 8px solid #ff004c;
+}
+
+
+/* =========================
+   DROP WINDOW
+========================= */
+
+.drop-item {
+    text-align: center;
+    padding: 30px;
+}
+
+.drop-item h2 {
+    font-size: 32px;
+    margin: 15px 0;
+}
+
+.drop-rarity {
+    font-size: 18px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.pixel-star {
+    font-size: 60px;
+    animation: pulse .6s infinite alternate;
+}
+
+@keyframes pulse {
+    from { transform: scale(.92); }
+    to { transform: scale(1.08); }
+}
+
+
+/* =========================
+   USER SEARCH
+========================= */
+
+.user-result {
+    padding: 10px;
+    margin-top: 8px;
+    border: 2px inset white;
+    background: white;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+#statusText {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20px;
+    background: #c0c0c0;
+    color: black;
+    border: 3px outset white;
+    padding: 8px 15px;
+    min-width: 220px;
+    text-align: center;
+    z-index: 50;
+}
+
+.username-display {
+    position: fixed;
+    top: 82px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    opacity: .7;
+}
+
+
+/* screen shake */
+
+.shake {
+    animation: shake .25s;
+}
+
+@keyframes shake {
+    0% { transform: translate(0); }
+    20% { transform: translate(-5px, 2px); }
+    40% { transform: translate(5px, -2px); }
+    60% { transform: translate(-4px, 2px); }
+    80% { transform: translate(4px, -1px); }
+    100% { transform: translate(0); }
+}
+
+</style>
 </head>
+
 
 <body>
 
-  <div class="desktop">
 
-    <div class="window">
+<!-- =====================================
+     LOGIN / REGISTRATION
+===================================== -->
 
-      <div class="titlebar">
-        <span>Internet Explorer - deliverdeliverdeliver.de</span>
+<div id="authScreen">
 
-        <div class="controls">
-          <div class="control">_</div>
-          <div class="control">□</div>
-          <div class="control close" onclick="fakeClose()">×</div>
-        </div>
-      </div>
+    <div class="auth-window">
 
-      <div class="toolbar">
-        ← Zurück &nbsp;&nbsp; → Vor &nbsp;&nbsp; ⟳ Aktualisieren &nbsp;&nbsp; 🏠 Startseite
-      </div>
-
-      <div class="addressbar">
-        <strong>Adresse</strong>
-        <div class="address">http://www.deliverdeliverdeliver.de</div>
-        <button class="retro-btn">Los</button>
-      </div>
-
-      <main class="page">
-
-        <div class="marquee">
-          <span>★★★ WILLKOMMEN IM INTERNET ★★★ DIESE WEBSITE IST EXTREM COOL ★★★</span>
+        <div class="titlebar">
+            DELIVER NETWORK LOGIN
         </div>
 
-        <h1>DELIVER<br>DELIVER<br>DELIVER</h1>
+        <div class="auth-content">
 
-        <div class="subtitle">
-          Willkommen auf meiner Homepage!!!
+            <div class="logo">
+                DELIVER<br>
+                DELIVER<br>
+                DELIVER
+
+                <small>
+                    DIGITAL DELIVERY NETWORK v1.0
+                </small>
+            </div>
+
+            <label>USERNAME</label>
+
+            <input
+                id="username"
+                type="text"
+                autocomplete="username"
+                maxlength="20"
+            >
+
+            <label>PASSWORT</label>
+
+            <input
+                id="password"
+                type="password"
+                autocomplete="current-password"
+            >
+
+            <div class="auth-buttons">
+
+                <button
+                    class="retro-button"
+                    onclick="login()"
+                >
+                    LOGIN
+                </button>
+
+                <button
+                    class="retro-button"
+                    onclick="register()"
+                >
+                    REGISTRIEREN
+                </button>
+
+            </div>
+
+            <div
+                class="auth-status"
+                id="authStatus"
+            >
+                SYSTEM READY.
+            </div>
+
         </div>
 
-        <div class="nav">
-          <button class="retro-btn" onclick="showPopup('home')">HOME</button>
-          <button class="retro-btn" onclick="showPopup('about')">ÜBER MICH</button>
-          <button class="retro-btn" onclick="showPopup('guestbook')">GÄSTEBUCH</button>
-          <button class="retro-btn" onclick="showPopup('downloads')">DOWNLOADS</button>
-          <button class="retro-btn" onclick="showPopup('secret')">???</button>
-        </div>
+    </div>
 
-        <div class="construction">
-          <span>🚧 UNDER CONSTRUCTION 🚧</span>
-        </div>
+</div>
 
-        <div class="content-box">
-          <h2>Willkommen, Internetreisender!</h2>
 
-          <p>
-            Du hast einen geheimen Ort im World Wide Web gefunden.
-          </p>
 
-          <p>
-            Diese Seite wurde mit modernster Internet-Technologie aus dem Jahre 2003 gebaut.
-          </p>
+<!-- =====================================
+     GAME
+===================================== -->
 
-          <p class="blink">
-            !!! BITTE NICHT AUF DIE VERDÄCHTIGEN BUTTONS KLICKEN !!!
-          </p>
-        </div>
+<div id="game">
 
-        <div class="counter">
-          Du bist Besucher Nummer:
-          <span class="digits" id="visitorCounter">00001337</span>
-        </div>
+    <div class="topbar">
 
-        <button class="retro-btn" onclick="randomEvent()">
-          DELIVER SOMETHING
+        <button
+            class="icon-button"
+            onclick="openUsers()"
+            title="User"
+        >
+            👤
         </button>
 
-        <div class="links">
-          <p>
-            <a onclick="showPopup('winner')">KLICK HIER UM EINEN GRATIS iPOD ZU GEWINNEN!!!</a>
-          </p>
-
-          <p>
-            <a onclick="showPopup('virus')">Kostenloser Bildschirmschoner.exe</a>
-          </p>
+        <div style="font-weight:bold">
+            DELIVER.EXE
         </div>
 
-        <div class="footer">
-          © 2003-2026 deliverdeliverdeliver.de
-          <br>
-          Best viewed with Internet Explorer 6 at 800×600
-          <br><br>
-          Made with HTML, pure skill and questionable decisions.
-        </div>
-
-        <div class="secret" onclick="secretMode()">
-          .
-        </div>
-
-      </main>
+        <button
+            class="icon-button"
+            onclick="openInventory()"
+            title="Inventar"
+        >
+            💾
+        </button>
 
     </div>
 
-  </div>
 
-  <div class="popup" id="popup">
-    <div class="popup-title">
-      <span id="popupTitle">Hinweis</span>
-      <span style="cursor:pointer" onclick="closePopup()">×</span>
+    <div
+        class="username-display"
+        id="currentUsername"
+    ></div>
+
+
+    <main class="game-center">
+
+        <div class="site-title">
+            DELIVER<br>
+            DELIVER<br>
+            DELIVER
+        </div>
+
+
+        <div class="package-area">
+
+            <div
+                class="package"
+                id="package"
+                onclick="clickPackage()"
+            >
+
+                <div class="box-lid">
+                    <div class="tape"></div>
+                </div>
+
+                <div class="box-body">
+                    <div class="tape"></div>
+                </div>
+
+                <div class="package-label">
+                    CLICK ME
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="click-info">
+
+            <div id="clickText">
+                0 / 10 CLICKS
+            </div>
+
+            <div class="progress-frame">
+                <div
+                    class="progress"
+                    id="progress"
+                ></div>
+            </div>
+
+            <div id="totalClicks">
+                TOTAL CLICKS: 0
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <div id="statusText">
+        WAITING FOR DELIVERY...
     </div>
 
-    <div class="popup-content" id="popupContent"></div>
-  </div>
-
-  <div class="taskbar">
-    <button class="start" onclick="showPopup('start')">start</button>
-    <div class="task">Internet Explorer</div>
-    <div class="clock" id="clock"></div>
-  </div>
+</div>
 
 
-<script>
 
-  const popup = document.getElementById("popup");
+<!-- =====================================
+     INVENTORY
+===================================== -->
 
-  function showPopup(type) {
+<div
+    class="modal-overlay"
+    id="inventoryModal"
+>
 
-    const title = document.getElementById("popupTitle");
-    const content = document.getElementById("popupContent");
+    <div class="modal-window">
 
-    const data = {
+        <div class="modal-title">
 
-      home: [
-        "Startseite",
-        "Du bist bereits auf der Startseite. Das Internet ist manchmal kompliziert."
-      ],
+            <span>MY INVENTORY</span>
 
-      about: [
-        "Über mich",
-        "Hallo. Ich bin eine hochmoderne Website aus dem Jahre 2003."
-      ],
+            <button
+                class="close"
+                onclick="closeModal('inventoryModal')"
+            >
+                X
+            </button>
 
-      guestbook: [
-        "Gästebuch",
-        "Gästebuch derzeit außer Betrieb.<br><br>Grund: Zu viele extrem coole Einträge."
-      ],
+        </div>
 
-      downloads: [
-        "Downloads",
-        "Download wird vorbereitet...<br><br><button class='retro-btn' onclick='fakeDownload()'>super_cool_file.exe</button>"
-      ],
+        <div class="modal-content">
 
-      secret: [
-        "TOP SECRET",
-        "Du hast den geheimen Bereich gefunden.<br><br>Leider ist hier nichts."
-      ],
+            <div
+                class="inventory-grid"
+                id="inventoryGrid"
+            ></div>
 
-      winner: [
-        "HERZLICHEN GLÜCKWUNSCH!!!",
-        "<b>DU BIST BESUCHER 1.000.000!</b><br><br>Du hast absolut nichts gewonnen."
-      ],
+        </div>
 
-      virus: [
-        "Windows Security Alert",
-        "Keine Sorge.<br><br>Das ist nur ein Fake-Popup.<br><br>Wahrscheinlich."
-      ],
+    </div>
 
-      start: [
-        "Startmenü",
-        "Programme<br><br>Internet Explorer<br>Paint<br>Minesweeper<br>ICQ<br>Winamp"
-      ]
+</div>
+
+
+
+<!-- =====================================
+     USERS
+===================================== -->
+
+<div
+    class="modal-overlay"
+    id="usersModal"
+>
+
+    <div class="modal-window">
+
+        <div class="modal-title">
+
+            <span>USER NETWORK</span>
+
+            <button
+                class="close"
+                onclick="closeModal('usersModal')"
+            >
+                X
+            </button>
+
+        </div>
+
+        <div class="modal-content">
+
+            <input
+                id="userSearch"
+                placeholder="Username suchen..."
+            >
+
+            <br><br>
+
+            <button
+                class="retro-button"
+                onclick="searchUsers()"
+            >
+                SEARCH
+            </button>
+
+            <button
+                class="retro-button"
+                onclick="logout()"
+            >
+                LOGOUT
+            </button>
+
+            <div id="userResults"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================
+     DROP
+===================================== -->
+
+<div
+    class="modal-overlay"
+    id="dropModal"
+>
+
+    <div class="modal-window">
+
+        <div class="modal-title">
+
+            <span>DELIVERY RECEIVED</span>
+
+            <button
+                class="close"
+                onclick="closeModal('dropModal')"
+            >
+                X
+            </button>
+
+        </div>
+
+        <div
+            class="modal-content drop-item"
+            id="dropContent"
+        ></div>
+
+    </div>
+
+</div>
+
+
+
+<script type="module">
+
+/* =========================================
+   CONFIGURATION
+
+   HIER DEINEN PUBLISHABLE KEY EINTRAGEN
+========================================= */
+
+const SUPABASE_URL =
+    "https://uzpkqbbpotfrsdjcljig.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_QKLQNqaQBZNg6VMGdfvM-Q_xjSFoFi0";
+
+
+const REGISTER_URL =
+    `${SUPABASE_URL}/functions/v1/register-user`;
+
+const LOGIN_URL =
+    `${SUPABASE_URL}/functions/v1/login-user`;
+
+const CLICK_URL =
+    `${SUPABASE_URL}/functions/v1/click-package`;
+
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let accessToken =
+    localStorage.getItem("deliver_access_token");
+
+let refreshToken =
+    localStorage.getItem("deliver_refresh_token");
+
+let currentUser =
+    JSON.parse(
+        localStorage.getItem("deliver_user") || "null"
+    );
+
+let clickLocked = false;
+
+
+
+/* =========================================
+   HELPERS
+========================================= */
+
+function setAuthStatus(message) {
+    document.getElementById("authStatus").innerText =
+        message;
+}
+
+function setStatus(message) {
+    document.getElementById("statusText").innerText =
+        message;
+}
+
+
+async function apiRequest(
+    url,
+    options = {},
+    useAuth = false
+) {
+
+    const headers = {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        ...(options.headers || {})
     };
 
-    title.innerHTML = data[type][0];
-    content.innerHTML = data[type][1];
+    if (useAuth && accessToken) {
+        headers["Authorization"] =
+            `Bearer ${accessToken}`;
+    }
 
-    popup.style.left =
-      Math.max(10, Math.random() * (window.innerWidth - 380)) + "px";
+    const response = await fetch(url, {
+        ...options,
+        headers
+    });
 
-    popup.style.top =
-      Math.max(10, Math.random() * (window.innerHeight - 250)) + "px";
+    const data = await response.json();
 
-    popup.classList.add("show");
-  }
+    if (!response.ok) {
+        throw new Error(
+            data.error ||
+            data.message ||
+            "Request failed"
+        );
+    }
 
-
-  function closePopup() {
-    popup.classList.remove("show");
-  }
-
-
-  function fakeClose() {
-    showPopup("virus");
-  }
-
-
-  function fakeDownload() {
-
-    document.getElementById("popupContent").innerHTML =
-      "Download läuft...<br><br>████████████ 99%<br><br>Fehler: Internet zu langsam.";
-
-  }
+    return data;
+}
 
 
-  function randomEvent() {
 
-    const events = [
+/* =========================================
+   REGISTER
+========================================= */
 
-      () => {
-        document.body.style.filter =
-          "hue-rotate(" + Math.floor(Math.random() * 360) + "deg)";
-      },
+window.register = async function () {
 
-      () => {
-        showPopup("winner");
-      },
+    const username =
+        document.getElementById("username")
+        .value.trim();
 
-      () => {
-        document.body.style.transform = "rotate(1deg)";
+    const password =
+        document.getElementById("password")
+        .value;
+
+    if (!username || !password) {
+        setAuthStatus(
+            "USERNAME UND PASSWORT EINGEBEN."
+        );
+        return;
+    }
+
+    setAuthStatus(
+        "CREATING ACCOUNT..."
+    );
+
+    try {
+
+        await apiRequest(
+            REGISTER_URL,
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            }
+        );
+
+        setAuthStatus(
+            "ACCOUNT CREATED. LOGGING IN..."
+        );
+
+        await performLogin(
+            username,
+            password
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        setAuthStatus(
+            "ERROR: " + error.message
+        );
+
+    }
+
+};
+
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+window.login = async function () {
+
+    const username =
+        document.getElementById("username")
+        .value.trim();
+
+    const password =
+        document.getElementById("password")
+        .value;
+
+    if (!username || !password) {
+        setAuthStatus(
+            "USERNAME UND PASSWORT EINGEBEN."
+        );
+        return;
+    }
+
+    await performLogin(
+        username,
+        password
+    );
+
+};
+
+
+async function performLogin(
+    username,
+    password
+) {
+
+    setAuthStatus(
+        "CONNECTING..."
+    );
+
+    try {
+
+        const data =
+            await apiRequest(
+                LOGIN_URL,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                }
+            );
+
+        accessToken =
+            data.access_token;
+
+        refreshToken =
+            data.refresh_token;
+
+        currentUser =
+            data.user;
+
+
+        localStorage.setItem(
+            "deliver_access_token",
+            accessToken
+        );
+
+        localStorage.setItem(
+            "deliver_refresh_token",
+            refreshToken
+        );
+
+        localStorage.setItem(
+            "deliver_user",
+            JSON.stringify(currentUser)
+        );
+
+
+        showGame();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        setAuthStatus(
+            "LOGIN FAILED: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+window.logout = function () {
+
+    localStorage.removeItem(
+        "deliver_access_token"
+    );
+
+    localStorage.removeItem(
+        "deliver_refresh_token"
+    );
+
+    localStorage.removeItem(
+        "deliver_user"
+    );
+
+    location.reload();
+
+};
+
+
+
+/* =========================================
+   SHOW GAME
+========================================= */
+
+async function showGame() {
+
+    document.getElementById(
+        "authScreen"
+    ).style.display = "none";
+
+    document.getElementById(
+        "game"
+    ).style.display = "block";
+
+    document.getElementById(
+        "currentUsername"
+    ).innerText =
+        "CONNECTED AS: " +
+        currentUser.username;
+
+    await loadProgress();
+
+}
+
+
+
+/* =========================================
+   PROGRESS
+========================================= */
+
+async function loadProgress() {
+
+    if (!currentUser)
+        return;
+
+    try {
+
+        const url =
+            `${SUPABASE_URL}/rest/v1/click_progress` +
+            `?user_id=eq.${currentUser.id}` +
+            `&select=*`;
+
+        const response =
+            await fetch(url, {
+
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization":
+                        `Bearer ${accessToken}`
+                }
+
+            });
+
+        if (!response.ok)
+            throw new Error(
+                "Progress konnte nicht geladen werden."
+            );
+
+        const rows =
+            await response.json();
+
+        if (!rows.length)
+            return;
+
+        updateProgress(rows[0]);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        setStatus(
+            "CONNECTION ERROR"
+        );
+
+    }
+
+}
+
+
+
+function updateProgress(data) {
+
+    const clicks =
+        data.clicks_since_drop || 0;
+
+    const total =
+        data.total_clicks || 0;
+
+    document.getElementById(
+        "clickText"
+    ).innerText =
+        `${clicks} / 10 CLICKS`;
+
+    document.getElementById(
+        "totalClicks"
+    ).innerText =
+        `TOTAL CLICKS: ${total}`;
+
+    document.getElementById(
+        "progress"
+    ).style.width =
+        `${clicks * 10}%`;
+
+}
+
+
+
+/* =========================================
+   PACKAGE CLICK
+========================================= */
+
+window.clickPackage =
+async function () {
+
+    if (clickLocked)
+        return;
+
+    clickLocked = true;
+
+    const box =
+        document.getElementById("package");
+
+    box.classList.add("shake");
+
+    setTimeout(() => {
+        box.classList.remove("shake");
+    }, 250);
+
+
+    try {
+
+        const data =
+            await apiRequest(
+                CLICK_URL,
+                {
+                    method: "POST",
+                    body: "{}"
+                },
+                true
+            );
+
+
+        updateProgress({
+            clicks_since_drop:
+                data.clicks_since_drop,
+
+            total_clicks:
+                data.total_clicks
+        });
+
+
+        if (data.drop) {
+
+            setStatus(
+                "DELIVERY RECEIVED!"
+            );
+
+            showDrop(data.item);
+
+            await loadInventory();
+
+        }
+
+        else {
+
+            setStatus(
+                data.clicks_remaining +
+                " CLICKS UNTIL DELIVERY"
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        setStatus(
+            "ERROR: " + error.message
+        );
+
+    }
+
+    finally {
 
         setTimeout(() => {
-          document.body.style.transform = "rotate(0deg)";
-        }, 500);
-      },
+            clickLocked = false;
+        }, 150);
 
-      () => {
-        alert("DELIVERY SUCCESSFUL");
-      },
+    }
 
-      () => {
-        document.querySelector("h1").innerHTML =
-          "YOU HAVE BEEN<br>DELIVERED";
-      }
-
-    ];
-
-    const event =
-      events[Math.floor(Math.random() * events.length)];
-
-    event();
-  }
+};
 
 
-  function secretMode() {
 
-    document.body.style.background = "#000";
+/* =========================================
+   DROP DISPLAY
+========================================= */
 
-    document.querySelector(".page").innerHTML = `
-      <div style="
-        background:black;
-        color:#00ff00;
-        min-height:600px;
-        padding:50px;
-        font-family:Courier New;
-        text-align:left;
-        font-size:18px;
-      ">
+function showDrop(item) {
 
-      DELIVER SYSTEM v1.0<br><br>
+    const modal =
+        document.getElementById(
+            "dropModal"
+        );
 
-      ACCESSING SERVER...<br>
-      CONNECTION ESTABLISHED.<br><br>
+    const content =
+        document.getElementById(
+            "dropContent"
+        );
 
-      USER DETECTED.<br><br>
 
-      WELCOME.<br><br>
+    content.innerHTML = `
 
-      <span class="blink">
-      THEY SHOULD NOT HAVE LET YOU FIND THIS.
-      </span>
+        <div class="pixel-star">
+            ★
+        </div>
 
-      </div>
+        <div class="drop-rarity
+            ${item.rarity}">
+            ${item.rarity}
+        </div>
+
+        <h2>
+            ${escapeHtml(item.name)}
+        </h2>
+
+        <p>
+            ${escapeHtml(
+                item.description || ""
+            )}
+        </p>
+
     `;
-  }
+
+    modal.style.display =
+        "flex";
+
+}
 
 
-  function updateClock() {
 
-    const now = new Date();
+/* =========================================
+   INVENTORY
+========================================= */
 
-    document.getElementById("clock").innerText =
-      now.toLocaleTimeString("de-DE", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+window.openInventory =
+async function () {
 
-  }
+    document.getElementById(
+        "inventoryModal"
+    ).style.display =
+        "flex";
 
-  setInterval(updateClock, 1000);
-  updateClock();
+    await loadInventory();
+
+};
 
 
-  let counter = Number(localStorage.getItem("visitorCounter"));
 
-  if (!counter) {
-    counter = 1337;
-  }
+async function loadInventory() {
 
-  counter++;
+    if (!currentUser)
+        return;
 
-  localStorage.setItem("visitorCounter", counter);
 
-  document.getElementById("visitorCounter").innerText =
-    String(counter).padStart(8, "0");
+    const url =
+        `${SUPABASE_URL}/rest/v1/inventory` +
+        `?user_id=eq.${currentUser.id}` +
+        `&select=amount,items(id,name,rarity,description,image_url)` +
+        `&order=id.desc`;
+
+
+    try {
+
+        const response =
+            await fetch(url, {
+
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization":
+                        `Bearer ${accessToken}`
+                }
+
+            });
+
+
+        if (!response.ok)
+            throw new Error(
+                "Inventar konnte nicht geladen werden."
+            );
+
+
+        const inventory =
+            await response.json();
+
+
+        const grid =
+            document.getElementById(
+                "inventoryGrid"
+            );
+
+
+        if (!inventory.length) {
+
+            grid.innerHTML = `
+                <p>
+                    INVENTORY EMPTY.
+                    <br><br>
+                    CLICK THE PACKAGE.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        grid.innerHTML =
+            inventory.map(row => {
+
+                const item =
+                    row.items;
+
+                return `
+
+                    <div class="item
+                        ${item.rarity}">
+
+                        <div class="item-name">
+                            ${escapeHtml(item.name)}
+                        </div>
+
+                        <div class="item-rarity">
+                            ${escapeHtml(item.rarity)}
+                        </div>
+
+                        <p>
+                            ${escapeHtml(
+                                item.description || ""
+                            )}
+                        </p>
+
+                        <div class="item-amount">
+                            x${row.amount}
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join("");
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+
+/* =========================================
+   USER SEARCH
+========================================= */
+
+window.openUsers =
+function () {
+
+    document.getElementById(
+        "usersModal"
+    ).style.display =
+        "flex";
+
+};
+
+
+
+window.searchUsers =
+async function () {
+
+    const search =
+        document.getElementById(
+            "userSearch"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const results =
+        document.getElementById(
+            "userResults"
+        );
+
+
+    if (!search) {
+        results.innerHTML = "";
+        return;
+    }
+
+
+    try {
+
+        const encoded =
+            encodeURIComponent(
+                `*${search}*`
+            );
+
+
+        const url =
+            `${SUPABASE_URL}/rest/v1/profiles` +
+            `?username=ilike.${encoded}` +
+            `&select=id,username` +
+            `&limit=20`;
+
+
+        const response =
+            await fetch(url, {
+
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization":
+                        `Bearer ${accessToken}`
+                }
+
+            });
+
+
+        const users =
+            await response.json();
+
+
+        if (!users.length) {
+
+            results.innerHTML =
+                "<p>NO USERS FOUND.</p>";
+
+            return;
+
+        }
+
+
+        results.innerHTML =
+            users.map(user => `
+
+                <div class="user-result">
+
+                    <strong>
+                        ${escapeHtml(user.username)}
+                    </strong>
+
+                    ${
+                        user.id === currentUser.id
+                        ? " (YOU)"
+                        : ""
+                    }
+
+                </div>
+
+            `).join("");
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        results.innerHTML =
+            "<p>SEARCH ERROR.</p>";
+
+    }
+
+};
+
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+window.closeModal =
+function (id) {
+
+    document.getElementById(
+        id
+    ).style.display =
+        "none";
+
+};
+
+
+
+/* =========================================
+   SECURITY
+========================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+
+/* =========================================
+   INITIALIZATION
+========================================= */
+
+if (
+    accessToken &&
+    currentUser
+) {
+
+    showGame();
+
+}
 
 </script>
 

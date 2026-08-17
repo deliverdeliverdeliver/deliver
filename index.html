@@ -500,6 +500,112 @@ input {
 }
 
 </style>
+/* =========================
+   CASE OPENING
+========================= */
+
+.case-opening {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    background: #111;
+    border: 3px inset white;
+    padding: 20px 0;
+    margin-bottom: 25px;
+}
+
+.case-marker {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: red;
+    z-index: 10;
+    transform: translateX(-50%);
+}
+
+.case-strip {
+    display: flex;
+    gap: 10px;
+    width: max-content;
+    transform: translateX(0);
+}
+
+.case-card {
+    width: 130px;
+    height: 145px;
+    flex-shrink: 0;
+    background: #c0c0c0;
+    color: black;
+    border: 3px outset white;
+    padding: 8px;
+    text-align: center;
+}
+
+.case-card img,
+.item img {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    display: block;
+    margin: 0 auto 8px;
+}
+
+.pixel-placeholder {
+    width: 75px;
+    height: 75px;
+    margin: 0 auto 8px;
+    display: grid;
+    place-items: center;
+    background: #222;
+    color: white;
+    border: 4px solid #555;
+    font-size: 30px;
+    image-rendering: pixelated;
+}
+
+.case-common {
+    border-bottom: 8px solid #888;
+}
+
+.case-uncommon {
+    border-bottom: 8px solid #34a853;
+}
+
+.case-rare {
+    border-bottom: 8px solid #1a73e8;
+}
+
+.case-epic {
+    border-bottom: 8px solid #9933cc;
+}
+
+.case-legendary {
+    border-bottom: 8px solid #ff9800;
+}
+
+.case-mythic {
+    border-bottom: 8px solid #ff004c;
+    box-shadow: 0 0 20px #ff004c;
+}
+
+.mythic-glow {
+    animation: mythicGlow .5s infinite alternate;
+}
+
+@keyframes mythicGlow {
+    from {
+        box-shadow: 0 0 10px #ff004c;
+    }
+
+    to {
+        box-shadow:
+            0 0 35px #ff004c,
+            0 0 60px #ff004c;
+    }
+}
 </head>
 
 
@@ -1295,28 +1401,237 @@ async function () {
    DROP DISPLAY
 ========================================= */
 
-function showDrop(item) {
+async function showDrop(item) {
 
     const modal =
-        document.getElementById(
-            "dropModal"
-        );
+        document.getElementById("dropModal");
 
     const content =
-        document.getElementById(
-            "dropContent"
-        );
+        document.getElementById("dropContent");
 
+    modal.style.display = "flex";
 
     content.innerHTML = `
+        <div class="case-opening">
 
-        <div class="pixel-star">
-            ★
+            <div class="case-marker"></div>
+
+            <div
+                class="case-strip"
+                id="caseStrip"
+            ></div>
+
         </div>
 
-        <div class="drop-rarity
-            ${item.rarity}">
-            ${item.rarity}
+        <div id="finalDrop">
+            DELIVERY PROCESSING...
+        </div>
+    `;
+
+    const strip =
+        document.getElementById("caseStrip");
+
+    /*
+       Fake-Items für die Animation.
+       Nur das Item am Ende ist der echte Drop.
+    */
+
+    const rarities = [
+        "common",
+        "common",
+        "common",
+        "uncommon",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary"
+    ];
+
+    let cards = [];
+
+    for (let i = 0; i < 30; i++) {
+
+        const rarity =
+            rarities[
+                Math.floor(
+                    Math.random() *
+                    rarities.length
+                )
+            ];
+
+        cards.push({
+            name: randomFakeItem(),
+            rarity: rarity,
+            image_url: null
+        });
+    }
+
+    /*
+       Der echte Drop wird an einer
+       definierten Stelle eingesetzt.
+    */
+
+    const winnerPosition = 25;
+
+    cards[winnerPosition] = item;
+
+    cards.forEach(card => {
+
+        strip.innerHTML +=
+            createCaseCard(card);
+
+    });
+
+    /*
+       Karte = 130px
+       Gap = 10px
+       Gesamt = 140px
+    */
+
+    const cardWidth = 140;
+
+    const container =
+        document.querySelector(
+            ".case-opening"
+        );
+
+    const centerOffset =
+        container.clientWidth / 2;
+
+    const target =
+        winnerPosition * cardWidth
+        - centerOffset
+        + 65;
+
+    /*
+       kleine zufällige Verschiebung,
+       damit es weniger mechanisch wirkt
+    */
+
+    const randomOffset =
+        Math.floor(
+            Math.random() * 35
+        ) - 17;
+
+    await new Promise(resolve => {
+
+        requestAnimationFrame(() => {
+
+            strip.style.transition =
+                "transform 5s cubic-bezier(.08,.6,.15,1)";
+
+            strip.style.transform =
+                `translateX(-${target + randomOffset}px)`;
+
+        });
+
+        setTimeout(resolve, 5200);
+
+    });
+
+
+    showFinalItem(item);
+
+}
+    function createCaseCard(item) {
+
+    const image =
+        item.image_url
+        ?
+        `
+        <img
+            src="${escapeHtml(item.image_url)}"
+            alt=""
+        >
+        `
+        :
+        `
+        <div class="pixel-placeholder">
+            ${getItemSymbol(item.name)}
+        </div>
+        `;
+
+    return `
+
+        <div
+            class="
+                case-card
+                case-${item.rarity}
+            "
+        >
+
+            ${image}
+
+            <strong>
+                ${escapeHtml(item.name)}
+            </strong>
+
+            <br>
+
+            <small>
+                ${escapeHtml(
+                    item.rarity.toUpperCase()
+                )}
+            </small>
+
+        </div>
+
+    `;
+}
+
+    function showFinalItem(item) {
+
+    const final =
+        document.getElementById(
+            "finalDrop"
+        );
+
+    const mythicClass =
+        item.rarity === "mythic"
+        ? "mythic-glow"
+        : "";
+
+    const image =
+        item.image_url
+        ?
+        `
+        <img
+            src="${escapeHtml(item.image_url)}"
+            style="
+                width:120px;
+                height:120px;
+                object-fit:contain;
+                image-rendering:pixelated;
+            "
+        >
+        `
+        :
+        `
+        <div
+            class="pixel-placeholder ${mythicClass}"
+            style="
+                width:120px;
+                height:120px;
+                font-size:50px;
+            "
+        >
+            ${getItemSymbol(item.name)}
+        </div>
+        `;
+
+    final.innerHTML = `
+
+        ${image}
+
+        <div
+            class="
+                drop-rarity
+                ${item.rarity}
+            "
+        >
+            ${escapeHtml(
+                item.rarity.toUpperCase()
+            )}
         </div>
 
         <h2>
@@ -1330,12 +1645,70 @@ function showDrop(item) {
         </p>
 
     `;
-
-    modal.style.display =
-        "flex";
-
 }
+    function randomFakeItem() {
 
+    const names = [
+        "Floppy Disk",
+        "CRT Monitor",
+        "Mouse Ball",
+        "Pixel Cursor",
+        "Blank CD-R",
+        "Generic EXE",
+        "Windows Sticker",
+        "Loading Hourglass",
+        "Desktop Shortcut",
+        "Internet Explorer"
+    ];
+
+    return names[
+        Math.floor(
+            Math.random() *
+            names.length
+        )
+    ];
+}
+    function getItemSymbol(name) {
+
+    if (
+        name.toLowerCase()
+        .includes("floppy")
+    )
+        return "💾";
+
+    if (
+        name.toLowerCase()
+        .includes("monitor")
+    )
+        return "🖥";
+
+    if (
+        name.toLowerCase()
+        .includes("mouse")
+    )
+        return "🖱";
+
+    if (
+        name.toLowerCase()
+        .includes("cd")
+    )
+        return "💿";
+
+    if (
+        name.toLowerCase()
+        .includes("folder")
+    )
+        return "📁";
+
+    if (
+        name.toLowerCase()
+        .includes("hourglass")
+    )
+        return "⌛";
+
+    return "★";
+}
+    
 
 
 /* =========================================
@@ -1414,40 +1787,49 @@ async function loadInventory() {
         }
 
 
-        grid.innerHTML =
-            inventory.map(row => {
+   grid.innerHTML =
+    inventory.map(row => {
 
-                const item =
-                    row.items;
+        const item = row.items;
 
-                return `
+        return `
+            <div class="item ${escapeHtml(item.rarity)}">
 
-                    <div class="item
-                        ${item.rarity}">
-
-                        <div class="item-name">
-                            ${escapeHtml(item.name)}
+                ${
+                    item.image_url
+                    ? `
+                        <img
+                            src="${escapeHtml(item.image_url)}"
+                            alt="${escapeHtml(item.name)}"
+                        >
+                    `
+                    : `
+                        <div class="pixel-placeholder">
+                            ${getItemSymbol(item.name)}
                         </div>
+                    `
+                }
 
-                        <div class="item-rarity">
-                            ${escapeHtml(item.rarity)}
-                        </div>
+                <div class="item-name">
+                    ${escapeHtml(item.name)}
+                </div>
 
-                        <p>
-                            ${escapeHtml(
-                                item.description || ""
-                            )}
-                        </p>
+                <div class="item-rarity">
+                    ${escapeHtml(item.rarity)}
+                </div>
 
-                        <div class="item-amount">
-                            x${row.amount}
-                        </div>
+                <p>
+                    ${escapeHtml(item.description || "")}
+                </p>
 
-                    </div>
+                <div class="item-amount">
+                    x${row.amount}
+                </div>
 
-                `;
+            </div>
+        `;
 
-            }).join("");
+    }).join("");
 
     }
 

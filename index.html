@@ -887,6 +887,25 @@ input {
     text-align: right;
     font-weight: bold;
 }
+
+    /* Profil bleibt links */
+.profile-button {
+    position: absolute;
+    left: 10px;
+}
+
+/* Pokal direkt daneben */
+.leaderboard-button {
+    position: absolute;
+    left: 65px;
+}
+
+/* DELIVER.EXE exakt mittig */
+.topbar-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
     
 </style>
 
@@ -978,25 +997,25 @@ input {
 
     <div class="topbar">
 
-        <button
-            class="icon-button"
-            onclick="openUsers()"
-            title="User"
-        >
-            👤
-        </button>
+       <button
+    class="icon-button profile-button"
+    onclick="openUsers()"
+    title="User"
+>
+    👤
+</button>
         
-        <button
-    class="icon-button"
+<button
+    class="icon-button leaderboard-button"
     onclick="openLeaderboard()"
     title="Leaderboard"
 >
     🏆
 </button>
 
-        <div style="font-weight:bold">
-            DELIVER.EXE
-        </div>
+        <div class="topbar-title" style="font-weight:bold">
+    DELIVER.EXE
+</div>
 
         <button
             class="icon-button"

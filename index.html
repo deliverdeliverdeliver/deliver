@@ -412,6 +412,7 @@ input {
     border-bottom: 8px solid #ff004c;
 }
 
+    
 
 /* =========================
    DROP WINDOW
@@ -697,6 +698,17 @@ input {
     text-align: center;
     margin-top: 8px;
 }
+    .inventory-filters .retro-button.active {
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+
+    background: #b0b0b0;
+
+    padding-top: 3px;
+    padding-left: 7px;
+}
 </style>
 
 </head>
@@ -910,42 +922,57 @@ input {
         COLLECTION: 0 / 50
     </div>
 
-   <div class="inventory-filters">
+ <div class="inventory-filters">
 
-    <button class="retro-button" onclick="setInventoryFilter('all')">
+    <button class="retro-button active"
+            data-filter="all"
+            onclick="setInventoryFilter('all')">
         ALL
     </button>
 
-    <button class="retro-button" onclick="setInventoryFilter('common')">
+    <button class="retro-button"
+            data-filter="common"
+            onclick="setInventoryFilter('common')">
         COMMON
     </button>
 
-    <button class="retro-button" onclick="setInventoryFilter('uncommon')">
+    <button class="retro-button"
+            data-filter="uncommon"
+            onclick="setInventoryFilter('uncommon')">
         UNCOMMON
     </button>
 
-    <button class="retro-button" onclick="setInventoryFilter('rare')">
+    <button class="retro-button"
+            data-filter="rare"
+            onclick="setInventoryFilter('rare')">
         RARE
     </button>
 
-    <button class="retro-button" onclick="setInventoryFilter('epic')">
+    <button class="retro-button"
+            data-filter="epic"
+            onclick="setInventoryFilter('epic')">
         EPIC
     </button>
 
-    <button class="retro-button" onclick="setInventoryFilter('legendary')">
+    <button class="retro-button"
+            data-filter="legendary"
+            onclick="setInventoryFilter('legendary')">
         LEGENDARY
     </button>
 
-    <button class="retro-button" onclick="setInventoryFilter('mythic')">
+    <button class="retro-button"
+            data-filter="mythic"
+            onclick="setInventoryFilter('mythic')">
         MYTHIC
     </button>
 
-    <button class="retro-button" onclick="setInventoryFilter('missing')">
+    <button class="retro-button"
+            data-filter="missing"
+            onclick="setInventoryFilter('missing')">
         MISSING
     </button>
 
 </div>
-
     <div
         class="inventory-grid"
         id="inventoryGrid"
@@ -1889,6 +1916,21 @@ if (
    
     window.setInventoryFilter = function (filter) {
     inventoryFilter = filter;
+
+    document
+        .querySelectorAll(".inventory-filters .retro-button")
+        .forEach(button => {
+            button.classList.remove("active");
+        });
+
+    const activeButton = document.querySelector(
+        `.inventory-filters .retro-button[data-filter="${filter}"]`
+    );
+
+    if (activeButton) {
+        activeButton.classList.add("active");
+    }
+
     renderInventory();
 };
 

@@ -766,6 +766,36 @@ input {
     background: white;
     text-align: left;
 }
+    .profile-name {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 14px;
+}
+
+.profile-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 7px 25px;
+
+    background: white;
+    border: 2px inset white;
+    padding: 12px;
+}
+
+.profile-rarity-stats {
+    margin-top: 12px;
+
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 7px 20px;
+
+    padding: 10px;
+
+    background: #ddd;
+    border: 2px inset white;
+}
 </style>
 
 </head>
@@ -1072,12 +1102,7 @@ input {
      USERS
 ===================================== -->
 
-<div
-    class="modal-overlay"
-    id="usersModal"
->
-
-    <div class="modal-window">
+<div class="modal-window">
 
         <div class="modal-title">
 
@@ -1093,6 +1118,12 @@ input {
         </div>
 
         <div class="modal-content">
+
+            <div id="profileStats" class="profile-stats">
+                LOADING PROFILE...
+            </div>
+
+            <hr>
 
             <input
                 id="userSearch"
@@ -2086,15 +2117,230 @@ if (
    USER SEARCH
 ========================================= */
 
-window.openUsers =
-function () {
+window.openUsers = async function () {
 
     document.getElementById(
         "usersModal"
-    ).style.display =
-        "flex";
+    ).style.display = "flex";
 
+    await loadUserStats();
 };
+
+    async function loadUserStats() {
+
+    if (!currentUser)
+        return;
+
+    try {
+
+        const headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${accessToken}`
+        };
+
+        const progressUrl =
+            `${SUPABASE_URL}/rest/v1/click_progress` +
+            `?user_id=eq.${currentUser.id}` +
+            `&select=total_clicks,total_packages_opened`;
+
+        const inventoryUrl =
+            `${SUPABASE_URL}/rest/v1/inventory` +
+            `?user_id=eq.${currentUser.id}` +
+            `&select=amount,items(id,rarity,item_value)`;
+
+        const [
+            progressResponse,
+            inventoryResponse
+        ] = await Promise.all([
+            fetch(progressUrl, { headers }),
+            fetch(inventoryUrl, { headers })
+        ]);
+
+        if (!progressResponse.ok) {
+            throw new Error(
+                "Click-Statistiken konnten nicht geladen werden."
+            );
+        }
+
+        if (!inventoryResponse.ok) {
+            throw new Error(
+                "Inventar-Statistiken konnten nicht geladen werden."
+            );
+        }
+
+        const progressRows =
+            await progressResponse.json();
+
+        const inventory =
+            await inventoryResponse.json();
+
+        const progress =
+            progressRows[0] || {
+                total_clicks: 0,
+                total_packages_opened: 0
+            };
+
+
+        /* =========================
+           GRUNDWERTE
+        ========================= */
+
+        const uniqueItems =
+            inventory.length;
+
+        const totalItems =
+            inventory.reduce(
+                (sum, row) =>
+                    sum + (row.amount || 0),
+                0
+            );
+
+        const inventoryValue =
+            inventory.reduce(
+                (sum, row) => {
+
+                    const value =
+                        row.items?.item_value || 0;
+
+                    const amount =
+                        row.amount || 0;
+
+                    return sum + (value * amount);
+
+                },
+                0
+            );
+
+        const collectionPercent =
+            Math.round(
+                (uniqueItems / 50) * 100
+            );
+
+
+        /* =========================
+           RARITY COLLECTION
+        ========================= */
+
+        const rarityStats = {
+            common: 0,
+            uncommon: 0,
+            rare: 0,
+            epic: 0,
+            legendary: 0,
+            mythic: 0
+        };
+
+        inventory.forEach(row => {
+
+            const rarity =
+                row.items?.rarity;
+
+            if (
+                rarity &&
+                rarityStats[rarity] !== undefined
+            ) {
+                rarityStats[rarity]++;
+            }
+
+        });
+
+
+        /* =========================
+           HTML AUSGABE
+        ========================= */
+
+        document.getElementById(
+            "userStats"
+        ).innerHTML = `
+
+            <div class="profile-name">
+                ${escapeHtml(currentUser.username)}
+            </div>
+
+            <div class="profile-stat-grid">
+
+                <span>TOTAL CLICKS</span>
+                <strong>
+                    ${progress.total_clicks || 0}
+                </strong>
+
+                <span>DELIVERIES</span>
+                <strong>
+                    ${progress.total_packages_opened || 0}
+                </strong>
+
+                <span>COLLECTION</span>
+                <strong>
+                    ${uniqueItems} / 50
+                </strong>
+
+                <span>COLLECTION %</span>
+                <strong>
+                    ${collectionPercent}%
+                </strong>
+
+                <span>UNIQUE ITEMS</span>
+                <strong>
+                    ${uniqueItems}
+                </strong>
+
+                <span>TOTAL ITEMS</span>
+                <strong>
+                    ${totalItems}
+                </strong>
+
+                <span>INVENTORY VALUE</span>
+                <strong>
+                    ${inventoryValue}
+                </strong>
+
+            </div>
+
+            <div class="profile-rarity-stats">
+
+                <div>
+                    COMMON:
+                    ${rarityStats.common} / 18
+                </div>
+
+                <div>
+                    UNCOMMON:
+                    ${rarityStats.uncommon} / 12
+                </div>
+
+                <div>
+                    RARE:
+                    ${rarityStats.rare} / 9
+                </div>
+
+                <div>
+                    EPIC:
+                    ${rarityStats.epic} / 6
+                </div>
+
+                <div>
+                    LEGENDARY:
+                    ${rarityStats.legendary} / 4
+                </div>
+
+                <div>
+                    MYTHIC:
+                    ${rarityStats.mythic} / 1
+                </div>
+
+            </div>
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "userStats"
+        ).innerHTML =
+            "PROFILE ERROR.";
+    }
+}
 
 
 
@@ -2245,5 +2491,92 @@ if (
 
 </script>
 
+    
+<!-- =====================================
+     USER NETWORK / USER STATISTICS
+===================================== -->
+
+<div class="modal-overlay" id="usersModal">
+
+    <div class="modal-window">
+
+        <div class="modal-title">
+            <span>USER NETWORK</span>
+
+            <button
+                class="close"
+                onclick="closeModal('usersModal')"
+            >
+                X
+            </button>
+        </div>
+
+        <div class="modal-content">
+
+            <!-- Eigene Statistiken -->
+            <div id="userStats">
+                <b>MY STATISTICS</b>
+
+                <br><br>
+
+                TOTAL CLICKS:
+                <span id="statsTotalClicks">0</span>
+
+                <br>
+
+                DELIVERIES:
+                <span id="statsDeliveries">0</span>
+
+                <br>
+
+                COLLECTION:
+                <span id="statsCollection">0 / 50</span>
+
+                <br>
+
+                INVENTORY VALUE:
+                <span id="statsInventoryValue">0</span>
+            </div>
+
+            <br>
+
+            <hr>
+
+            <br>
+
+            <!-- Andere User suchen -->
+            <b>FIND USER</b>
+
+            <br><br>
+
+            <input
+                id="userSearch"
+                placeholder="Username suchen..."
+            >
+
+            <button
+                class="retro-button"
+                onclick="searchUsers()"
+            >
+                SEARCH
+            </button>
+
+            <div id="userResults"></div>
+
+            <br>
+
+            <button
+                class="retro-button"
+                onclick="logout()"
+            >
+                LOGOUT
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+    
 </body>
 </html>

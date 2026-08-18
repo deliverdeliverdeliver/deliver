@@ -805,6 +805,48 @@ input {
     outline: 2px dotted #000;
     background: #eee;
 }
+
+    .leaderboard-filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.leaderboard-filters .retro-button.active {
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    background: #b0b0b0;
+}
+
+.leaderboard-row {
+    display: grid;
+    grid-template-columns: 45px 1fr 120px;
+    gap: 10px;
+    align-items: center;
+
+    background: white;
+    border: 2px inset white;
+
+    padding: 9px;
+    margin-bottom: 5px;
+}
+
+.leaderboard-rank {
+    font-weight: bold;
+}
+
+.leaderboard-user {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.leaderboard-value {
+    text-align: right;
+    font-weight: bold;
+}
 </style>
 
 </head>
@@ -902,6 +944,14 @@ input {
         >
             👤
         </button>
+        
+        <button
+    class="icon-button"
+    onclick="openLeaderboard()"
+    title="Leaderboard"
+>
+    🏆
+</button>
 
         <div style="font-weight:bold">
             DELIVER.EXE
@@ -1190,7 +1240,7 @@ let clickLocked = false;
 let inventoryFilter = "all";
 let cachedInventory = [];
 let cachedItems = [];
-
+let leaderboardMode = "clicks";
 
 /* =========================================
    HELPERS
@@ -2170,7 +2220,126 @@ window.openUsers = async function () {
                 (uniqueItems / 50) * 100
             );
 
+window.openLeaderboard = async function () {
 
+    document.getElementById(
+        "leaderboardModal"
+    ).style.display = "flex";
+
+    await loadLeaderboard();
+};
+        window.setLeaderboardMode = async function (mode) {
+
+    leaderboardMode = mode;
+
+    document
+        .querySelectorAll(
+            ".leaderboard-filters .retro-button"
+        )
+        .forEach(button => {
+            button.classList.remove("active");
+        });
+
+    const activeButton =
+        document.querySelector(
+            `.leaderboard-filters .retro-button[data-leaderboard="${mode}"]`
+        );
+
+    if (activeButton) {
+        activeButton.classList.add("active");
+    }
+
+    await loadLeaderboard();
+};
+
+        async function loadLeaderboard() {
+
+    const content =
+        document.getElementById(
+            "leaderboardContent"
+        );
+
+    content.innerHTML =
+        "LOADING...";
+
+    try {
+
+        const headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization":
+                `Bearer ${accessToken}`
+        };
+
+        if (leaderboardMode === "clicks") {
+
+            const url =
+                `${SUPABASE_URL}/rest/v1/click_progress` +
+                `?select=user_id,total_clicks,profiles(username)` +
+                `&order=total_clicks.desc` +
+                `&limit=50`;
+
+            const response =
+                await fetch(url, {
+                    headers
+                });
+
+            if (!response.ok) {
+                throw new Error(
+                    "Leaderboard konnte nicht geladen werden."
+                );
+            }
+
+            const rows =
+                await response.json();
+
+            if (!rows.length) {
+                content.innerHTML =
+                    "NO USERS FOUND.";
+                return;
+            }
+
+            content.innerHTML =
+                rows.map(
+                    (row, index) => {
+
+                        const username =
+                            row.profiles?.username
+                            || "UNKNOWN";
+
+                        return `
+                            <div class="leaderboard-row">
+
+                                <div class="leaderboard-rank">
+                                    #${index + 1}
+                                </div>
+
+                                <div class="leaderboard-user">
+                                    ${escapeHtml(username)}
+                                </div>
+
+                                <div class="leaderboard-value">
+                                    ${row.total_clicks || 0}
+                                </div>
+
+                            </div>
+                        `;
+                    }
+                ).join("");
+
+            return;
+        }
+
+        content.innerHTML =
+            "COMING SOON...";
+
+    } catch (error) {
+
+        console.error(error);
+
+        content.innerHTML =
+            "LEADERBOARD ERROR.";
+    }
+}
         /* =========================
            RARITY COLLECTION
         ========================= */
@@ -2608,7 +2777,64 @@ function (id) {
 
 };
 
+<div
+    class="modal-overlay"
+    id="leaderboardModal"
+>
+    <div class="modal-window">
 
+        <div class="modal-title">
+            <span>LEADERBOARD</span>
+
+            <button
+                class="close"
+                onclick="closeModal('leaderboardModal')"
+            >
+                X
+            </button>
+        </div>
+
+        <div class="modal-content">
+
+            <div class="leaderboard-filters">
+
+                <button
+                    class="retro-button active"
+                    data-leaderboard="clicks"
+                    onclick="setLeaderboardMode('clicks')"
+                >
+                    TOTAL CLICKS
+                </button>
+
+                <button
+                    class="retro-button"
+                    data-leaderboard="collection"
+                    onclick="setLeaderboardMode('collection')"
+                >
+                    COLLECTION
+                </button>
+
+                <button
+                    class="retro-button"
+                    data-leaderboard="value"
+                    onclick="setLeaderboardMode('value')"
+                >
+                    VALUE
+                </button>
+
+            </div>
+
+            <div
+                id="leaderboardContent"
+                class="leaderboard-content"
+            >
+                LOADING...
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
 /* =========================================
    SECURITY

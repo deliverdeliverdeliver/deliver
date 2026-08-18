@@ -1775,7 +1775,27 @@ async function loadInventory() {
         const inventory =
             await response.json();
 
+const uniqueItems = inventory.length;
 
+const totalValue = inventory.reduce(
+    (sum, row) => {
+        return sum +
+            ((row.items.item_value || 0) * row.amount);
+    },
+    0
+);
+
+const percentage =
+    Math.round((uniqueItems / 50) * 100);
+
+document.getElementById(
+    "collectionStats"
+).innerHTML = `
+    COLLECTION: ${uniqueItems} / 50
+    (${percentage}%)
+    <br>
+    INVENTORY VALUE: ${totalValue}
+`;
         const grid =
             document.getElementById(
                 "inventoryGrid"

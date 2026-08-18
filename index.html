@@ -1281,7 +1281,7 @@ let clickLocked = false;
 let inventoryFilter = "all";
 let cachedInventory = [];
 let cachedItems = [];
-
+let leaderboardMode = "clicks";
 
 /* =========================================
    HELPERS
@@ -2732,155 +2732,7 @@ if (
 
 }
 
-</script>
-
-    
-<!-- =====================================
-     USER NETWORK / USER STATISTICS
-===================================== -->
-
-<div class="modal-overlay" id="usersModal">
-
-    <div class="modal-window">
-
-        <div class="modal-title">
-            <span>USER NETWORK</span>
-
-            <button
-                class="close"
-                onclick="closeModal('usersModal')"
-            >
-                X
-            </button>
-        </div>
-
-        <div class="modal-content">
-
-            <!-- Eigene Statistiken -->
-            <div id="userStats">
-                <b>MY STATISTICS</b>
-
-                <br><br>
-
-                TOTAL CLICKS:
-                <span id="statsTotalClicks">0</span>
-
-                <br>
-
-                DELIVERIES:
-                <span id="statsDeliveries">0</span>
-
-                <br>
-
-                COLLECTION:
-                <span id="statsCollection">0 / 50</span>
-
-                <br>
-
-                INVENTORY VALUE:
-                <span id="statsInventoryValue">0</span>
-            </div>
-
-            <br>
-
-            <hr>
-
-            <br>
-
-            <!-- Andere User suchen -->
-            <b>FIND USER</b>
-
-            <br><br>
-
-            <input
-                id="userSearch"
-                placeholder="Username suchen..."
-            >
-
-            <button
-                class="retro-button"
-                onclick="searchUsers()"
-            >
-                SEARCH
-            </button>
-
-            <div id="userResults"></div>
-
-            <br>
-
-            <button
-                class="retro-button"
-                onclick="logout()"
-            >
-                LOGOUT
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-   <div
-    class="modal-overlay"
-    id="leaderboardModal"
->
-    <div class="modal-window">
-
-        <div class="modal-title">
-            <span>LEADERBOARD</span>
-
-            <button
-                class="close"
-                onclick="closeModal('leaderboardModal')"
-            >
-                X
-            </button>
-        </div>
-
-        <div class="modal-content">
-
-            <div class="leaderboard-filters">
-
-                <button
-                    class="retro-button active"
-                    data-leaderboard="clicks"
-                    onclick="setLeaderboardMode('clicks')"
-                >
-                    TOTAL CLICKS
-                </button>
-
-                <button
-                    class="retro-button"
-                    data-leaderboard="deliveries"
-                    onclick="setLeaderboardMode('deliveries')"
-                >
-                    DELIVERIES
-                </button>
-
-                <button
-                    class="retro-button"
-                    data-leaderboard="collection"
-                    onclick="setLeaderboardMode('collection')"
-                >
-                    COLLECTION
-                </button>
-
-            </div>
-
-            <div
-                id="leaderboardContent"
-                class="leaderboard-content"
-            >
-                LOADING...
-            </div>
-
-        </div>
-
-    </div>
-</div>
-   
-    
-/* =====================================
+    /* =====================================
    LEADERBOARD
 ===================================== */
 
@@ -3084,5 +2936,155 @@ async function loadLeaderboard() {
     }
 
 }
+
+</script>
+
+    
+<!-- =====================================
+     USER NETWORK / USER STATISTICS
+===================================== -->
+
+<div class="modal-overlay" id="usersModal">
+
+    <div class="modal-window">
+
+        <div class="modal-title">
+            <span>USER NETWORK</span>
+
+            <button
+                class="close"
+                onclick="closeModal('usersModal')"
+            >
+                X
+            </button>
+        </div>
+
+        <div class="modal-content">
+
+            <!-- Eigene Statistiken -->
+            <div id="userStats">
+                <b>MY STATISTICS</b>
+
+                <br><br>
+
+                TOTAL CLICKS:
+                <span id="statsTotalClicks">0</span>
+
+                <br>
+
+                DELIVERIES:
+                <span id="statsDeliveries">0</span>
+
+                <br>
+
+                COLLECTION:
+                <span id="statsCollection">0 / 50</span>
+
+                <br>
+
+                INVENTORY VALUE:
+                <span id="statsInventoryValue">0</span>
+            </div>
+
+            <br>
+
+            <hr>
+
+            <br>
+
+            <!-- Andere User suchen -->
+            <b>FIND USER</b>
+
+            <br><br>
+
+            <input
+                id="userSearch"
+                placeholder="Username suchen..."
+            >
+
+            <button
+                class="retro-button"
+                onclick="searchUsers()"
+            >
+                SEARCH
+            </button>
+
+            <div id="userResults"></div>
+
+            <br>
+
+            <button
+                class="retro-button"
+                onclick="logout()"
+            >
+                LOGOUT
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+   <div
+    class="modal-overlay"
+    id="leaderboardModal"
+>
+    <div class="modal-window">
+
+        <div class="modal-title">
+            <span>LEADERBOARD</span>
+
+            <button
+                class="close"
+                onclick="closeModal('leaderboardModal')"
+            >
+                X
+            </button>
+        </div>
+
+        <div class="modal-content">
+
+            <div class="leaderboard-filters">
+
+                <button
+                    class="retro-button active"
+                    data-leaderboard="clicks"
+                    onclick="setLeaderboardMode('clicks')"
+                >
+                    TOTAL CLICKS
+                </button>
+
+                <button
+                    class="retro-button"
+                    data-leaderboard="deliveries"
+                    onclick="setLeaderboardMode('deliveries')"
+                >
+                    DELIVERIES
+                </button>
+
+                <button
+                    class="retro-button"
+                    data-leaderboard="collection"
+                    onclick="setLeaderboardMode('collection')"
+                >
+                    COLLECTION
+                </button>
+
+            </div>
+
+            <div
+                id="leaderboardContent"
+                class="leaderboard-content"
+            >
+                LOADING...
+            </div>
+
+        </div>
+
+    </div>
+</div>
+   
+    
+
 </body>
 </html>

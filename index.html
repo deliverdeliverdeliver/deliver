@@ -2658,64 +2658,7 @@ function (id) {
 
 };
 
-<div
-    class="modal-overlay"
-    id="leaderboardModal"
->
-    <div class="modal-window">
 
-        <div class="modal-title">
-            <span>LEADERBOARD</span>
-
-            <button
-                class="close"
-                onclick="closeModal('leaderboardModal')"
-            >
-                X
-            </button>
-        </div>
-
-        <div class="modal-content">
-
-            <div class="leaderboard-filters">
-
-                <button
-                    class="retro-button active"
-                    data-leaderboard="clicks"
-                    onclick="setLeaderboardMode('clicks')"
-                >
-                    TOTAL CLICKS
-                </button>
-
-                <button
-                    class="retro-button"
-                    data-leaderboard="collection"
-                    onclick="setLeaderboardMode('collection')"
-                >
-                    COLLECTION
-                </button>
-
-                <button
-                    class="retro-button"
-                    data-leaderboard="value"
-                    onclick="setLeaderboardMode('value')"
-                >
-                    VALUE
-                </button>
-
-            </div>
-
-            <div
-                id="leaderboardContent"
-                class="leaderboard-content"
-            >
-                LOADING...
-            </div>
-
-        </div>
-
-    </div>
-</div>
 
 /* =========================================
    SECURITY

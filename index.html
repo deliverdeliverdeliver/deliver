@@ -2048,10 +2048,12 @@ if (
             </p>
 
             <div class="item-detail-info">
-                OWNED: x${amount}
-                <br>
-                VALUE: ${item.item_value || 0}
-            </div>
+    OWNED: x${amount}
+    <br>
+    VALUE EACH: ${item.item_value || 0}
+    <br>
+    TOTAL VALUE: ${(item.item_value || 0) * amount}
+</div>
 
         </div>
     `;

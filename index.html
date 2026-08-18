@@ -2158,6 +2158,211 @@ if (
     renderInventory();
 };
 
+
+/* =====================================
+   LEADERBOARD
+===================================== */
+
+let leaderboardMode = "clicks";
+
+
+window.openLeaderboard = async function () {
+
+    document.getElementById(
+        "leaderboardModal"
+    ).style.display = "flex";
+
+    await loadLeaderboard();
+
+};
+
+
+window.setLeaderboardMode = async function (mode) {
+
+    leaderboardMode = mode;
+
+    document
+        .querySelectorAll("[data-leaderboard]")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.leaderboard === mode
+            );
+
+        });
+
+    await loadLeaderboard();
+
+};
+
+
+async function loadLeaderboard() {
+
+    const content =
+        document.getElementById(
+            "leaderboardContent"
+        );
+
+    content.innerHTML = "LOADING...";
+
+
+    /*
+        COLLECTION machen wir danach separat,
+        weil die Daten aus inventory kommen.
+    */
+
+    if (leaderboardMode === "collection") {
+
+        content.innerHTML =
+            "COLLECTION LEADERBOARD COMING NEXT...";
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/click_progress?select=user_id,total_clicks,total_packages_opened`,
+                {
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization":
+                            `Bearer ${accessToken}`
+                    }
+                }
+            );
+
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+
+        const progress =
+            await response.json();
+
+
+        const profileResponse =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/profiles?select=id,username`,
+                {
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization":
+                            `Bearer ${accessToken}`
+                    }
+                }
+            );
+
+
+        if (!profileResponse.ok) {
+            throw new Error(
+                `PROFILE HTTP ${profileResponse.status}`
+            );
+        }
+
+
+        const profiles =
+            await profileResponse.json();
+
+
+        const usernames = {};
+
+        profiles.forEach(profile => {
+
+            usernames[profile.id] =
+                profile.username;
+
+        });
+
+
+        const leaderboard =
+            progress
+                .map(row => {
+
+                    return {
+
+                        user_id:
+                            row.user_id,
+
+                        username:
+                            usernames[row.user_id]
+                            || "UNKNOWN USER",
+
+                        value:
+                            leaderboardMode === "clicks"
+                            ? row.total_clicks
+                            : row.total_packages_opened
+
+                    };
+
+                })
+                .sort(
+                    (a, b) =>
+                        Number(b.value || 0) -
+                        Number(a.value || 0)
+                );
+
+
+        if (!leaderboard.length) {
+
+            content.innerHTML =
+                "NO DATA FOUND.";
+
+            return;
+
+        }
+
+
+        content.innerHTML =
+            leaderboard.map(
+                (user, index) => `
+
+                <div class="leaderboard-row">
+
+                    <div class="leaderboard-rank">
+                        #${index + 1}
+                    </div>
+
+                    <div class="leaderboard-user">
+                        ${escapeHtml(user.username)}
+
+                        ${
+                            user.user_id === currentUser.id
+                            ? " (YOU)"
+                            : ""
+                        }
+                    </div>
+
+                    <div class="leaderboard-value">
+                        ${Number(user.value || 0).toLocaleString()}
+                    </div>
+
+                </div>
+
+            `).join("");
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Leaderboard error:",
+            error
+        );
+
+        content.innerHTML =
+            "LEADERBOARD ERROR.";
+
+    }
+
+}
 /* =========================================
    USER SEARCH
 ========================================= */
@@ -2732,210 +2937,7 @@ if (
 
 }
 
-    /* =====================================
-   LEADERBOARD
-===================================== */
 
-let leaderboardMode = "clicks";
-
-
-window.openLeaderboard = async function () {
-
-    document.getElementById(
-        "leaderboardModal"
-    ).style.display = "flex";
-
-    await loadLeaderboard();
-
-};
-
-
-window.setLeaderboardMode = async function (mode) {
-
-    leaderboardMode = mode;
-
-    document
-        .querySelectorAll("[data-leaderboard]")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.leaderboard === mode
-            );
-
-        });
-
-    await loadLeaderboard();
-
-};
-
-
-async function loadLeaderboard() {
-
-    const content =
-        document.getElementById(
-            "leaderboardContent"
-        );
-
-    content.innerHTML = "LOADING...";
-
-
-    /*
-        COLLECTION machen wir danach separat,
-        weil die Daten aus inventory kommen.
-    */
-
-    if (leaderboardMode === "collection") {
-
-        content.innerHTML =
-            "COLLECTION LEADERBOARD COMING NEXT...";
-
-        return;
-
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                `${SUPABASE_URL}/rest/v1/click_progress?select=user_id,total_clicks,total_packages_opened`,
-                {
-                    headers: {
-                        "apikey": SUPABASE_KEY,
-                        "Authorization":
-                            `Bearer ${accessToken}`
-                    }
-                }
-            );
-
-
-        if (!response.ok) {
-            throw new Error(
-                `HTTP ${response.status}`
-            );
-        }
-
-
-        const progress =
-            await response.json();
-
-
-        const profileResponse =
-            await fetch(
-                `${SUPABASE_URL}/rest/v1/profiles?select=id,username`,
-                {
-                    headers: {
-                        "apikey": SUPABASE_KEY,
-                        "Authorization":
-                            `Bearer ${accessToken}`
-                    }
-                }
-            );
-
-
-        if (!profileResponse.ok) {
-            throw new Error(
-                `PROFILE HTTP ${profileResponse.status}`
-            );
-        }
-
-
-        const profiles =
-            await profileResponse.json();
-
-
-        const usernames = {};
-
-        profiles.forEach(profile => {
-
-            usernames[profile.id] =
-                profile.username;
-
-        });
-
-
-        const leaderboard =
-            progress
-                .map(row => {
-
-                    return {
-
-                        user_id:
-                            row.user_id,
-
-                        username:
-                            usernames[row.user_id]
-                            || "UNKNOWN USER",
-
-                        value:
-                            leaderboardMode === "clicks"
-                            ? row.total_clicks
-                            : row.total_packages_opened
-
-                    };
-
-                })
-                .sort(
-                    (a, b) =>
-                        Number(b.value || 0) -
-                        Number(a.value || 0)
-                );
-
-
-        if (!leaderboard.length) {
-
-            content.innerHTML =
-                "NO DATA FOUND.";
-
-            return;
-
-        }
-
-
-        content.innerHTML =
-            leaderboard.map(
-                (user, index) => `
-
-                <div class="leaderboard-row">
-
-                    <div class="leaderboard-rank">
-                        #${index + 1}
-                    </div>
-
-                    <div class="leaderboard-user">
-                        ${escapeHtml(user.username)}
-
-                        ${
-                            user.user_id === currentUser.id
-                            ? " (YOU)"
-                            : ""
-                        }
-                    </div>
-
-                    <div class="leaderboard-value">
-                        ${Number(user.value || 0).toLocaleString()}
-                    </div>
-
-                </div>
-
-            `).join("");
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Leaderboard error:",
-            error
-        );
-
-        content.innerHTML =
-            "LEADERBOARD ERROR.";
-
-    }
-
-}
 
 </script>
 

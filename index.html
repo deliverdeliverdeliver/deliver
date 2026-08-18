@@ -1357,7 +1357,7 @@ let clickLocked = false;
 let inventoryFilter = "all";
 let cachedInventory = [];
 let cachedItems = [];
-
+let chatRefreshInterval = null;
 
 /* =========================================
    HELPERS
@@ -3091,14 +3091,26 @@ if (
 
 window.openChat = async function () {
 
-    document.getElementById("chatModal").style.display = "flex";
+    document.getElementById(
+        "chatModal"
+    ).style.display = "flex";
 
     await loadChatMessages();
 
-    setTimeout(() => {
-        document.getElementById("chatInput").focus();
-    }, 100);
+    if (chatRefreshInterval) {
+        clearInterval(chatRefreshInterval);
+    }
 
+    chatRefreshInterval = setInterval(
+        loadChatMessages,
+        2000
+    );
+
+    setTimeout(() => {
+        document.getElementById(
+            "chatInput"
+        ).focus();
+    }, 100);
 };
 
 
@@ -3193,6 +3205,21 @@ async function loadChatMessages() {
 
 }
 
+    window.closeChat = function () {
+
+    document.getElementById(
+        "chatModal"
+    ).style.display = "none";
+
+    if (chatRefreshInterval) {
+
+        clearInterval(
+            chatRefreshInterval
+        );
+
+        chatRefreshInterval = null;
+    }
+};
 
 /* =====================================
    SEND CHAT MESSAGE
@@ -3309,6 +3336,7 @@ window.sendChatMessage = async function () {
 
 };
 
+    
 </script>
 
     
@@ -3470,7 +3498,7 @@ window.sendChatMessage = async function () {
 
             <button
                 class="close"
-                onclick="closeModal('chatModal')"
+                onclick="closeChat()"
             >
                 X
             </button>

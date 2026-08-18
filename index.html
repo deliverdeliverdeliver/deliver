@@ -1358,6 +1358,7 @@ let inventoryFilter = "all";
 let cachedInventory = [];
 let cachedItems = [];
 let chatRefreshInterval = null;
+let lastChatData = "";
 
 /* =========================================
    HELPERS
@@ -3095,14 +3096,16 @@ window.openChat = async function () {
         "chatModal"
     ).style.display = "flex";
 
-    await loadChatMessages();
+    lastChatData = "";
+
+    await loadChatMessages(true);
 
     if (chatRefreshInterval) {
         clearInterval(chatRefreshInterval);
     }
 
     chatRefreshInterval = setInterval(
-        loadChatMessages,
+        () => loadChatMessages(false),
         2000
     );
 
@@ -3114,12 +3117,14 @@ window.openChat = async function () {
 };
 
 
-async function loadChatMessages() {
+async function loadChatMessages(showLoading = false) {
 
     const container =
         document.getElementById("chatMessages");
 
-    container.innerHTML = "LOADING...";
+    if (showLoading) {
+        container.innerHTML = "LOADING...";
+    }
 
     try {
 
@@ -3141,7 +3146,13 @@ async function loadChatMessages() {
 
         const messages = await response.json();
 
+const newChatData = JSON.stringify(messages);
 
+if (newChatData === lastChatData) {
+    return;
+}
+
+lastChatData = newChatData
         if (!messages.length) {
 
             container.innerHTML =

@@ -2206,7 +2206,25 @@ if (
     VALUE EACH: ${item.item_value || 0}
     <br>
     TOTAL VALUE: ${(item.item_value || 0) * amount}
+    <br><br>
+    CONVERT VALUE:
+    ${(item.item_value || 0) * 1.5} CREDITS EACH
 </div>
+
+<br>
+
+<button
+    class="retro-button"
+    onclick="convertItem('${item.id}')"
+    ${amount <= 0 ? "disabled" : ""}
+>
+    CONVERT 1
+</button>
+
+<div
+    id="convertStatus"
+    style="margin-top:10px;"
+></div>
 
         </div>
     `;
@@ -2214,6 +2232,96 @@ if (
     document.getElementById(
         "itemDetailModal"
     ).style.display = "flex";
+};
+
+    window.convertItem = async function (itemId) {
+
+    const status =
+        document.getElementById(
+            "convertStatus"
+        );
+
+    if (status) {
+        status.innerText =
+            "CONVERTING...";
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/rpc/convert_item_to_currency`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization":
+                            `Bearer ${accessToken}`,
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        target_item_id:
+                            Number(itemId),
+
+                        convert_amount: 1
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                "Conversion failed"
+            );
+        }
+
+
+        if (status) {
+
+            status.innerText =
+                `+${data.currency_received} CREDITS`;
+
+        }
+
+
+        await loadInventory();
+
+
+        setTimeout(() => {
+
+            closeModal(
+                "itemDetailModal"
+            );
+
+        }, 700);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Convert error:",
+            error
+        );
+
+        if (status) {
+
+            status.innerText =
+                "CONVERSION ERROR";
+
+        }
+
+    }
 };
     window.setInventoryFilter = function (filter) {
     inventoryFilter = filter;

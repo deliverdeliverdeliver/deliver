@@ -888,17 +888,6 @@ input {
     font-weight: bold;
 }
 
-    /* Profil bleibt links */
-.profile-button {
-    position: absolute;
-    left: 10px;
-}
-
-/* Pokal direkt daneben */
-.leaderboard-button {
-    position: absolute;
-    left: 65px;
-}
 
 /* DELIVER.EXE exakt mittig */
 .topbar-title {
@@ -906,7 +895,37 @@ input {
     left: 50%;
     transform: translateX(-50%);
 }
-    
+
+    .topbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 70px;
+}
+
+.topbar-left {
+    position: absolute;
+    left: 4px;
+
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.topbar-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+}
+
+.topbar-right {
+    position: absolute;
+    right: 4px;
+
+    display: flex;
+    align-items: center;
+}
 </style>
 
 </head>
@@ -995,27 +1014,38 @@ input {
 
 <div id="game">
 
-    <div class="topbar">
+<div class="topbar">
 
-       <button
-    class="icon-button profile-button"
-    onclick="openUsers()"
-    title="User"
->
-    👤
-</button>
-        
-<button
-    class="icon-button leaderboard-button"
-    onclick="openLeaderboard()"
-    title="Leaderboard"
->
-    🏆
-</button>
+    <!-- LINKS -->
+    <div class="topbar-left">
 
-        <div class="topbar-title" style="font-weight:bold">
-    DELIVER.EXE
-</div>
+        <button
+            class="icon-button"
+            onclick="openUsers()"
+            title="User"
+        >
+            👤
+        </button>
+
+        <button
+            class="icon-button"
+            onclick="openLeaderboard()"
+            title="Leaderboard"
+        >
+            🏆
+        </button>
+
+    </div>
+
+
+    <!-- MITTE -->
+    <div class="topbar-title">
+        DELIVER.EXE
+    </div>
+
+
+    <!-- RECHTS -->
+    <div class="topbar-right">
 
         <button
             class="icon-button"

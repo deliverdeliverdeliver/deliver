@@ -709,6 +709,63 @@ input {
     padding-top: 3px;
     padding-left: 7px;
 }
+
+    .inventory-grid .item:not(.missing) {
+    cursor: pointer;
+}
+
+.inventory-grid .item:not(.missing):hover {
+    outline: 2px dotted #000;
+    outline-offset: -5px;
+}
+
+.item-detail-window {
+    width: 520px;
+    max-width: 90vw;
+}
+
+.item-detail {
+    text-align: center;
+    padding: 30px;
+}
+
+.item-detail-image,
+.item-detail-placeholder {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 12px;
+    border: 4px inset #c0c0c0;
+    background: #222;
+}
+
+.item-detail-image {
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.item-detail-placeholder {
+    display: grid;
+    place-items: center;
+    font-size: 42px;
+    color: white;
+}
+
+.item-detail-rarity {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.item-detail h2 {
+    margin: 10px 0;
+}
+
+.item-detail-info {
+    margin-top: 20px;
+    padding: 10px;
+    border: 2px inset white;
+    background: white;
+    text-align: left;
+}
 </style>
 
 </head>
@@ -1905,8 +1962,11 @@ if (
                         </div>
                     `;
 
-            return `
-                <div class="item ${escapeHtml(item.rarity)}">
+           return `
+    <div
+        class="item ${escapeHtml(item.rarity)}"
+        onclick="openItemDetail('${item.id}')"
+    >
 
                     ${image}
 
@@ -1938,7 +1998,68 @@ if (
 
         }).join("");
 }
-   
+   window.openItemDetail = function (itemId) {
+
+    const item = cachedItems.find(
+        item => String(item.id) === String(itemId)
+    );
+
+    if (!item) return;
+
+    const inventoryEntry = cachedInventory.find(
+        row =>
+            row.items &&
+            String(row.items.id) === String(itemId)
+    );
+
+    const amount = inventoryEntry
+        ? inventoryEntry.amount
+        : 0;
+
+    const image = item.image_url
+        ? `
+            <img
+                class="item-detail-image"
+                src="${escapeHtml(item.image_url)}"
+                alt="${escapeHtml(item.name)}"
+            >
+        `
+        : `
+            <div class="item-detail-placeholder">
+                ${getItemSymbol(item.name)}
+            </div>
+        `;
+
+    document.getElementById("itemDetailContent").innerHTML = `
+        <div class="item-detail ${escapeHtml(item.rarity)}">
+
+            ${image}
+
+            <div class="item-detail-rarity">
+                ${escapeHtml(item.rarity).toUpperCase()}
+            </div>
+
+            <h2>
+                ${escapeHtml(item.name)}
+            </h2>
+
+            <p>
+                ${escapeHtml(item.description || "")}
+            </p>
+
+            <div class="item-detail-info">
+                OWNED: x${amount}
+                <br>
+                VALUE: ${item.item_value || 0}
+            </div>
+
+        </div>
+    `;
+
+    document.getElementById(
+        "itemDetailModal"
+    ).style.display = "flex";
+};
     window.setInventoryFilter = function (filter) {
     inventoryFilter = filter;
 

@@ -945,6 +945,19 @@ input {
 .chat-input-row input {
     margin: 0;
 }
+
+    .wallet-display {
+    margin-right: 10px;
+    padding: 8px 12px;
+
+    background: white;
+    color: black;
+
+    border: 2px inset white;
+
+    font-weight: bold;
+    white-space: nowrap;
+}
 </style>
 
 </head>
@@ -1072,17 +1085,24 @@ input {
 
 
         <!-- RECHTS -->
-        <div class="topbar-right">
+       <div class="topbar-right">
 
-            <button
-                class="icon-button"
-                onclick="openInventory()"
-                title="Inventar"
-            >
-                💾
-            </button>
+    <div
+        id="walletDisplay"
+        class="wallet-display"
+    >
+        CREDITS: 0
+    </div>
 
-        </div>
+    <button
+        class="icon-button"
+        onclick="openInventory()"
+        title="Inventar"
+    >
+        💾
+    </button>
+
+</div>
 
     </div>
 
@@ -1617,7 +1637,7 @@ async function showGame() {
         currentUser.username;
 
     await loadProgress();
-
+await loadWallet();
 }
 
 
@@ -2295,7 +2315,7 @@ if (
 
 
         await loadInventory();
-
+await loadWallet();
 
         setTimeout(() => {
 
@@ -3454,6 +3474,56 @@ window.sendChatMessage = async function () {
     }
 
 };
+
+    async function loadWallet() {
+
+    if (!currentUser || !accessToken)
+        return;
+
+    try {
+
+        const response = await fetch(
+            `${SUPABASE_URL}/rest/v1/wallets?user_id=eq.${currentUser.id}&select=balance`,
+            {
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Wallet HTTP ${response.status}`
+            );
+        }
+
+        const rows =
+            await response.json();
+
+        const balance =
+            rows.length
+            ? Number(rows[0].balance || 0)
+            : 0;
+
+        document.getElementById(
+            "walletDisplay"
+        ).innerText =
+            `CREDITS: ${balance.toLocaleString("de-DE")}`;
+
+    } catch (error) {
+
+        console.error(
+            "Wallet load error:",
+            error
+        );
+
+        document.getElementById(
+            "walletDisplay"
+        ).innerText =
+            "CREDITS: ERROR";
+    }
+}
 
     
 </script>

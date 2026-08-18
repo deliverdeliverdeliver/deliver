@@ -2207,19 +2207,8 @@ async function loadLeaderboard() {
     content.innerHTML = "LOADING...";
 
 
-    /*
-        COLLECTION machen wir danach separat,
-        weil die Daten aus inventory kommen.
-    */
 
-    if (leaderboardMode === "collection") {
 
-        content.innerHTML =
-            "COLLECTION LEADERBOARD COMING NEXT...";
-
-        return;
-
-    }
 
 
     try {
@@ -2281,7 +2270,90 @@ async function loadLeaderboard() {
 
         });
 
+if (leaderboardMode === "value") {
 
+    const inventoryResponse =
+        await fetch(
+            `${SUPABASE_URL}/rest/v1/inventory?select=user_id,amount,items(item_value)`,
+            {
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization":
+                        `Bearer ${accessToken}`
+                }
+            }
+        );
+
+    if (!inventoryResponse.ok) {
+        throw new Error(
+            `INVENTORY HTTP ${inventoryResponse.status}`
+        );
+    }
+
+    const inventory =
+        await inventoryResponse.json();
+
+    const valuesByUser = {};
+
+    inventory.forEach(row => {
+
+        if (!valuesByUser[row.user_id]) {
+            valuesByUser[row.user_id] = 0;
+        }
+
+        const itemValue =
+            row.items?.item_value || 0;
+
+        const amount =
+            row.amount || 0;
+
+        valuesByUser[row.user_id] +=
+            itemValue * amount;
+    });
+
+    const valueLeaderboard =
+        profiles
+            .map(profile => ({
+                user_id: profile.id,
+                username: profile.username,
+                value:
+                    valuesByUser[profile.id] || 0
+            }))
+            .sort(
+                (a, b) =>
+                    Number(b.value) -
+                    Number(a.value)
+            );
+
+    content.innerHTML =
+        valueLeaderboard.map(
+            (user, index) => `
+                <div class="leaderboard-row">
+
+                    <div class="leaderboard-rank">
+                        #${index + 1}
+                    </div>
+
+                    <div class="leaderboard-user">
+                        ${escapeHtml(user.username)}
+
+                        ${
+                            user.user_id === currentUser.id
+                            ? " (YOU)"
+                            : ""
+                        }
+                    </div>
+
+                    <div class="leaderboard-value">
+                        ${Number(user.value).toLocaleString()}
+                    </div>
+
+                </div>
+            `
+        ).join("");
+
+    return;
+}
         const leaderboard =
             progress
                 .map(row => {
@@ -3065,12 +3137,12 @@ if (
                 </button>
 
                 <button
-                    class="retro-button"
-                    data-leaderboard="collection"
-                    onclick="setLeaderboardMode('collection')"
-                >
-                    COLLECTION
-                </button>
+    class="retro-button"
+    data-leaderboard="value"
+    onclick="setLeaderboardMode('value')"
+>
+    INVENTORY VALUE
+</button>
 
             </div>
 

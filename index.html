@@ -796,6 +796,15 @@ input {
     background: #ddd;
     border: 2px inset white;
 }
+
+    .user-result {
+    cursor: pointer;
+}
+
+.user-result:hover {
+    outline: 2px dotted #000;
+    background: #eee;
+}
 </style>
 
 </head>
@@ -2354,23 +2363,29 @@ async function () {
 
 
         results.innerHTML =
-            users.map(user => `
+    users.map(user => `
 
-                <div class="user-result">
+        <div
+            class="user-result"
+            onclick="openPublicProfile(
+                '${user.id}',
+                '${escapeHtml(user.username)}'
+            )"
+        >
 
-                    <strong>
-                        ${escapeHtml(user.username)}
-                    </strong>
+            <strong>
+                ${escapeHtml(user.username)}
+            </strong>
 
-                    ${
-                        user.id === currentUser.id
-                        ? " (YOU)"
-                        : ""
-                    }
+            ${
+                user.id === currentUser.id
+                ? " (YOU)"
+                : ""
+            }
 
-                </div>
+        </div>
 
-            `).join("");
+    `).join("");
 
     }
 
@@ -2385,7 +2400,199 @@ async function () {
 
 };
 
+window.openPublicProfile = async function (
+    userId,
+    username
+) {
 
+    const statsBox =
+        document.getElementById("userStats");
+
+    statsBox.innerHTML =
+        "LOADING PROFILE...";
+
+    try {
+
+        const headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${accessToken}`
+        };
+
+        const progressUrl =
+            `${SUPABASE_URL}/rest/v1/click_progress` +
+            `?user_id=eq.${userId}` +
+            `&select=total_clicks,total_packages_opened`;
+
+        const inventoryUrl =
+            `${SUPABASE_URL}/rest/v1/inventory` +
+            `?user_id=eq.${userId}` +
+            `&select=amount,items(id,rarity,item_value)`;
+
+        const [
+            progressResponse,
+            inventoryResponse
+        ] = await Promise.all([
+            fetch(progressUrl, { headers }),
+            fetch(inventoryUrl, { headers })
+        ]);
+
+        if (
+            !progressResponse.ok ||
+            !inventoryResponse.ok
+        ) {
+            throw new Error(
+                "Profil konnte nicht geladen werden."
+            );
+        }
+
+        const progressRows =
+            await progressResponse.json();
+
+        const inventory =
+            await inventoryResponse.json();
+
+        const progress =
+            progressRows[0] || {
+                total_clicks: 0,
+                total_packages_opened: 0
+            };
+
+        const uniqueItems =
+            inventory.length;
+
+        const totalItems =
+            inventory.reduce(
+                (sum, row) =>
+                    sum + (row.amount || 0),
+                0
+            );
+
+        const inventoryValue =
+            inventory.reduce(
+                (sum, row) =>
+                    sum +
+                    (
+                        (row.items?.item_value || 0)
+                        * (row.amount || 0)
+                    ),
+                0
+            );
+
+        const collectionPercent =
+            Math.round(
+                (uniqueItems / 50) * 100
+            );
+
+        const rarityStats = {
+            common: 0,
+            uncommon: 0,
+            rare: 0,
+            epic: 0,
+            legendary: 0,
+            mythic: 0
+        };
+
+        inventory.forEach(row => {
+
+            const rarity =
+                row.items?.rarity;
+
+            if (
+                rarity &&
+                rarityStats[rarity] !== undefined
+            ) {
+                rarityStats[rarity]++;
+            }
+        });
+
+        statsBox.innerHTML = `
+
+            <div class="profile-name">
+                ${escapeHtml(username)}
+            </div>
+
+            <div class="profile-stat-grid">
+
+                <span>TOTAL CLICKS</span>
+                <strong>
+                    ${progress.total_clicks || 0}
+                </strong>
+
+                <span>DELIVERIES</span>
+                <strong>
+                    ${progress.total_packages_opened || 0}
+                </strong>
+
+                <span>COLLECTION</span>
+                <strong>
+                    ${uniqueItems} / 50
+                </strong>
+
+                <span>COLLECTION %</span>
+                <strong>
+                    ${collectionPercent}%
+                </strong>
+
+                <span>UNIQUE ITEMS</span>
+                <strong>
+                    ${uniqueItems}
+                </strong>
+
+                <span>TOTAL ITEMS</span>
+                <strong>
+                    ${totalItems}
+                </strong>
+
+                <span>INVENTORY VALUE</span>
+                <strong>
+                    ${inventoryValue}
+                </strong>
+
+            </div>
+
+            <div class="profile-rarity-stats">
+
+                <div>
+                    COMMON:
+                    ${rarityStats.common} / 18
+                </div>
+
+                <div>
+                    UNCOMMON:
+                    ${rarityStats.uncommon} / 12
+                </div>
+
+                <div>
+                    RARE:
+                    ${rarityStats.rare} / 9
+                </div>
+
+                <div>
+                    EPIC:
+                    ${rarityStats.epic} / 6
+                </div>
+
+                <div>
+                    LEGENDARY:
+                    ${rarityStats.legendary} / 4
+                </div>
+
+                <div>
+                    MYTHIC:
+                    ${rarityStats.mythic} / 1
+                </div>
+
+            </div>
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+
+        statsBox.innerHTML =
+            "PROFILE ERROR.";
+    }
+};
 
 /* =========================================
    MODAL

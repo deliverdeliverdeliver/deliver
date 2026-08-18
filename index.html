@@ -618,6 +618,48 @@ input {
 .drop-result.mythic .drop-rarity-line {
     background: #ff004c;
 }
+
+    /* FINAL DELIVERY WINDOW CLEANUP */
+
+#dropContent {
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+.drop-result {
+    padding: 28px 30px 30px !important;
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+/* Alte untere Linie entfernen */
+.drop-result::after,
+#dropContent::after {
+    display: none !important;
+}
+
+/* Item etwas näher zusammenrücken */
+.drop-item-image,
+.drop-item-placeholder {
+    margin-bottom: 16px !important;
+}
+
+.drop-rarity {
+    margin-bottom: 6px !important;
+}
+
+.drop-rarity-line {
+    margin-bottom: 16px !important;
+}
+
+.drop-item-name {
+    margin-bottom: 10px !important;
+}
+
+.drop-item-description {
+    margin-bottom: 0 !important;
+}
 </style>
 
 </head>

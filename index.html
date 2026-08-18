@@ -910,30 +910,41 @@ input {
         COLLECTION: 0 / 50
     </div>
 
-    <div class="inventory-filters">
+   <div class="inventory-filters">
 
-        <button
-            class="retro-button"
-            onclick="setInventoryFilter('all')"
-        >
-            ALL
-        </button>
+    <button class="retro-button" onclick="setInventoryFilter('all')">
+        ALL
+    </button>
 
-        <button
-            class="retro-button"
-            onclick="setInventoryFilter('rareplus')"
-        >
-            RARE+
-        </button>
+    <button class="retro-button" onclick="setInventoryFilter('common')">
+        COMMON
+    </button>
 
-        <button
-            class="retro-button"
-            onclick="setInventoryFilter('missing')"
-        >
-            MISSING
-        </button>
+    <button class="retro-button" onclick="setInventoryFilter('uncommon')">
+        UNCOMMON
+    </button>
 
-    </div>
+    <button class="retro-button" onclick="setInventoryFilter('rare')">
+        RARE
+    </button>
+
+    <button class="retro-button" onclick="setInventoryFilter('epic')">
+        EPIC
+    </button>
+
+    <button class="retro-button" onclick="setInventoryFilter('legendary')">
+        LEGENDARY
+    </button>
+
+    <button class="retro-button" onclick="setInventoryFilter('mythic')">
+        MYTHIC
+    </button>
+
+    <button class="retro-button" onclick="setInventoryFilter('missing')">
+        MISSING
+    </button>
+
+</div>
 
     <div
         class="inventory-grid"
@@ -1770,12 +1781,24 @@ function renderInventory() {
         items = items.filter(item => !item.owned);
     }
 
-    if (inventoryFilter === "rareplus") {
-        items = items.filter(
-            item =>
-                rarityOrder[item.rarity] >= rarityOrder.rare
-        );
-    }
+   if (inventoryFilter === "missing") {
+    items = items.filter(item => !item.owned);
+}
+
+if (
+    [
+        "common",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary",
+        "mythic"
+    ].includes(inventoryFilter)
+) {
+    items = items.filter(
+        item => item.rarity === inventoryFilter
+    );
+}
 
     const grid =
         document.getElementById("inventoryGrid");

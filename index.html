@@ -813,10 +813,20 @@ input {
 
         <div class="modal-content">
 
-            <div
-                class="inventory-grid"
-                id="inventoryGrid"
-            ></div>
+    <div id="collectionStats" style="
+        margin-bottom:20px;
+        padding:10px;
+        background:white;
+        border:2px inset white;
+        font-weight:bold;
+    ">
+        COLLECTION: 0 / 50
+    </div>
+
+    <div
+        class="inventory-grid"
+        id="inventoryGrid"
+    ></div>
 
         </div>
 
@@ -1738,7 +1748,7 @@ async function loadInventory() {
     const url =
         `${SUPABASE_URL}/rest/v1/inventory` +
         `?user_id=eq.${currentUser.id}` +
-        `&select=amount,items(id,name,rarity,description,image_url)` +
+        `&select=amount,items(id,name,rarity,description,image_url,item_value)` +
         `&order=id.desc`;
 
 
@@ -1817,7 +1827,12 @@ async function loadInventory() {
                 <div class="item-rarity">
                     ${escapeHtml(item.rarity)}
                 </div>
-
+<div style="
+    margin-top:6px;
+    font-weight:bold;
+">
+    VALUE: ${item.item_value}
+</div>
                 <p>
                     ${escapeHtml(item.description || "")}
                 </p>

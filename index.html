@@ -519,6 +519,105 @@ input {
             0 0 60px #ff004c;
     }
 }
+
+    /* =========================================
+   DELIVERY RESULT - SINGLE ITEM
+========================================= */
+
+#dropContent {
+    width: 100%;
+}
+
+.drop-result {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 30px 30px 35px;
+    text-align: center;
+}
+
+/* ITEM BILD */
+
+.drop-item-image,
+.drop-item-placeholder {
+    width: 120px;
+    height: 120px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.drop-item-placeholder {
+    background: #222;
+    border: 4px solid #666;
+
+    color: white;
+    font-size: 52px;
+}
+
+/* RARITY */
+
+.drop-rarity {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.drop-rarity-line {
+    width: 100%;
+    height: 8px;
+    margin-bottom: 18px;
+}
+
+/* ITEM NAME */
+
+.drop-item-name {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 14px;
+}
+
+/* BESCHREIBUNG */
+
+.drop-item-description {
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+/* RARITY FARBEN */
+
+.drop-result.common .drop-rarity-line {
+    background: #999;
+}
+
+.drop-result.uncommon .drop-rarity-line {
+    background: #48b853;
+}
+
+.drop-result.rare .drop-rarity-line {
+    background: #3478e5;
+}
+
+.drop-result.epic .drop-rarity-line {
+    background: #9933cc;
+}
+
+.drop-result.legendary .drop-rarity-line {
+    background: #f89000;
+}
+
+.drop-result.mythic .drop-rarity-line {
+    background: #ff004c;
+}
 </style>
 
 </head>
@@ -1327,64 +1426,45 @@ async function () {
 ========================================= */
 
 function showDrop(item) {
+    const modal = document.getElementById("dropModal");
+    const content = document.getElementById("dropContent");
 
-    const modal =
-        document.getElementById("dropModal");
+    const rarity = (item.rarity || "common").toLowerCase();
 
-    const content =
-        document.getElementById("dropContent");
-
-    const mythicClass =
-        item.rarity === "mythic"
-        ? "mythic-glow"
-        : "";
-
-    const image =
-        item.image_url
+    const image = item.image_url
         ? `
             <img
                 src="${escapeHtml(item.image_url)}"
                 alt="${escapeHtml(item.name)}"
-                style="
-                    width:120px;
-                    height:120px;
-                    object-fit:contain;
-                    image-rendering:pixelated;
-                "
+                class="drop-item-image"
             >
         `
         : `
-            <div
-                class="pixel-placeholder ${mythicClass}"
-                style="
-                    width:120px;
-                    height:120px;
-                    font-size:50px;
-                "
-            >
+            <div class="drop-item-placeholder">
                 ${getItemSymbol(item.name)}
             </div>
         `;
 
     content.innerHTML = `
+        <div class="drop-result ${rarity}">
+            
+            ${image}
 
-        ${image}
+            <div class="drop-rarity">
+                ${escapeHtml(rarity.toUpperCase())}
+            </div>
 
-        <div
-            class="drop-rarity ${item.rarity}"
-            style="margin-top:15px;"
-        >
-            ${escapeHtml(item.rarity.toUpperCase())}
+            <div class="drop-rarity-line"></div>
+
+            <div class="drop-item-name">
+                ${escapeHtml(item.name)}
+            </div>
+
+            <div class="drop-item-description">
+                ${escapeHtml(item.description || "")}
+            </div>
+
         </div>
-
-        <h2>
-            ${escapeHtml(item.name)}
-        </h2>
-
-        <p>
-            ${escapeHtml(item.description || "")}
-        </p>
-
     `;
 
     modal.style.display = "flex";

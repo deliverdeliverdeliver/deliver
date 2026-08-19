@@ -3461,18 +3461,28 @@ console.log("collectionPercent:", collectionPercent);
     mythic: 0
 };
 
-        inventory.forEach(row => {
+        const rarityStats = {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0
+};
 
-            const rarity =
-                row.items?.rarity;
+inventory.forEach(row => {
 
-            if (
-                rarity &&
-                rarityStats[rarity] !== undefined
-            ) {
-                rarityStats[rarity]++;
-            }
-        });
+    const rarity =
+        row.items?.rarity;
+
+    if (
+        rarity &&
+        rarityStats[rarity] !== undefined
+    ) {
+        rarityStats[rarity]++;
+    }
+
+});
 
         statsBox.innerHTML = `
 

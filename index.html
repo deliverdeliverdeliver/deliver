@@ -207,13 +207,17 @@ input {
 }
 
 .package {
-    width: 210px;
-    height: 180px;
+    width: 240px;
+    height: 190px;
     position: relative;
     cursor: pointer;
-    image-rendering: pixelated;
-    transition: transform 0.08s;
     user-select: none;
+
+    transform: scale(1.2);
+
+    transition:
+        transform 0.12s ease,
+        filter 0.12s ease;
 }
 
 .package:active {
@@ -234,12 +238,13 @@ input {
 }
 
 .package:hover {
-    transform: translateY(-4px);
+    transform: scale(1.2) translateY(-4px);
     filter: brightness(1.08);
 }
 
+
 .package:active {
-    transform: translateY(6px) scale(0.97);
+    transform: scale(1.16) translateY(4px);
 }
 
 .package-shell {

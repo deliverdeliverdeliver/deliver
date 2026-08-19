@@ -1712,6 +1712,16 @@ let cachedInventory = [];
 let cachedItems = [];
 let chatRefreshInterval = null;
 let lastChatData = "";
+let totalAvailableItems = 0;
+
+let rarityTotals = {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0
+};
 
 /* =========================================
    HELPERS

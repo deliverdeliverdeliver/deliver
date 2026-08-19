@@ -3442,6 +3442,10 @@ window.openPublicProfile = async function (
         ? Math.round((uniqueItems / totalAvailableItems) * 100)
         : 0;
 
+        console.log("uniqueItems:", uniqueItems);
+console.log("totalAvailableItems:", totalAvailableItems);
+console.log("collectionPercent:", collectionPercent);
+
         rarityTotals = {
     common: 0,
     uncommon: 0,

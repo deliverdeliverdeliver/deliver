@@ -220,56 +220,165 @@ input {
     transform: translateY(8px) scale(.96);
 }
 
-.box-body {
-    position: absolute;
-    left: 15px;
-    right: 15px;
-    top: 48px;
-    bottom: 0;
-    background: #b56c2d;
-    border: 8px solid #693a15;
-    box-shadow:
-        inset 8px 8px #d99450,
-        inset -8px -8px #804519,
-        10px 10px 0 #000;
+
+
+.package {
+    width: 240px;
+    height: 190px;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    transition:
+        transform 0.12s ease,
+        filter 0.12s ease;
 }
 
-.box-lid {
+.package:hover {
+    transform: translateY(-4px);
+    filter: brightness(1.08);
+}
+
+.package:active {
+    transform: translateY(6px) scale(0.97);
+}
+
+.package-shell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    filter:
+        drop-shadow(10px 12px 0 rgba(0,0,0,0.7));
+}
+
+.package-top {
     position: absolute;
-    top: 22px;
-    left: 0;
-    width: 210px;
-    height: 62px;
-    background: #c97a35;
-    border: 8px solid #693a15;
+    left: 14px;
+    top: 18px;
+
+    width: 212px;
+    height: 55px;
+
+    background: #8d6138;
+
+    border:
+        5px solid #382513;
+
     box-shadow:
-        inset 8px 8px #e4a05c,
-        inset -8px -8px #8b4c1d;
+        inset 5px 5px 0 #bd8956,
+        inset -5px -5px 0 #684323;
+
     z-index: 2;
 }
 
-.tape {
+.package-front {
     position: absolute;
-    width: 38px;
-    top: 0;
-    bottom: 0;
-    left: 78px;
-    background: #e0c17b;
-    border-left: 4px solid #9f7d3d;
-    border-right: 4px solid #9f7d3d;
+    left: 22px;
+    top: 60px;
+
+    width: 196px;
+    height: 120px;
+
+    background: #704a2b;
+
+    border: 5px solid #382513;
+
+    box-shadow:
+        inset 6px 6px 0 #95643c,
+        inset -6px -6px 0 #53341d;
 }
 
-.package-label {
+.package-tape {
     position: absolute;
-    z-index: 5;
+
+    width: 45px;
+    height: 100%;
+
+    left: 50%;
+    transform: translateX(-50%);
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #aaa 0px,
+            #aaa 5px,
+            #888 5px,
+            #888 8px
+        );
+
+    border-left: 2px solid #666;
+    border-right: 2px solid #ccc;
+}
+
+.package-sticker {
+    position: absolute;
+
+    left: 12px;
+    top: 18px;
+
+    background: #e7e7df;
+    color: #111;
+
+    border: 2px solid #222;
+
+    padding: 5px 7px;
+
+    font-size: 10px;
+    line-height: 1.3;
+
+    transform: rotate(-2deg);
+}
+
+.package-barcode {
+    position: absolute;
+
+    left: 16px;
+    bottom: 14px;
+
+    padding: 3px 5px;
+
     background: white;
     color: black;
-    padding: 5px 8px;
-    left: 58px;
-    top: 98px;
-    font-size: 13px;
-    border: 2px solid black;
-    transform: rotate(-4deg);
+
+    font-family: monospace;
+    font-size: 11px;
+
+    border: 1px solid #222;
+}
+
+.package-warning {
+    position: absolute;
+
+    right: 10px;
+    top: 18px;
+
+    background: #d93232;
+    color: white;
+
+    border: 2px solid #731414;
+
+    padding: 4px 6px;
+
+    font-size: 9px;
+    font-weight: bold;
+
+    transform: rotate(3deg);
+}
+
+.package-led {
+    position: absolute;
+
+    right: 14px;
+    bottom: 16px;
+
+    width: 10px;
+    height: 10px;
+
+    background: #35ff70;
+
+    border: 2px solid #173d22;
+
+    box-shadow:
+        0 0 8px #35ff70;
 }
 
 .click-info {
@@ -1325,49 +1434,65 @@ input {
         </div>
 
 
-        <div class="package-area">
+<div class="package-area">
 
-            <div
-                class="package"
-                id="package"
-                onclick="clickPackage()"
-            >
+    <div
+        class="package"
+        id="package"
+        onclick="clickPackage()"
+    >
 
-                <div class="box-lid">
-                    <div class="tape"></div>
+        <div class="package-shell">
+
+            <div class="package-top">
+                <div class="package-tape"></div>
+            </div>
+
+            <div class="package-front">
+
+                <div class="package-sticker">
+                    DELIVER NETWORK
+                    <br>
+                    PKG-001
                 </div>
 
-                <div class="box-body">
-                    <div class="tape"></div>
+                <div class="package-barcode">
+                    ||| || ||||| | |||
                 </div>
 
-                <div class="package-label">
-                    CLICK ME
+                <div class="package-warning">
+                    PRIORITY
                 </div>
+
+                <div class="package-led"></div>
 
             </div>
 
         </div>
 
+    </div>
 
-        <div class="click-info">
+</div>
 
-            <div id="clickText">
-                0 / 10 CLICKS
-            </div>
 
-            <div class="progress-frame">
-                <div
-                    class="progress"
-                    id="progress"
-                ></div>
-            </div>
+<div class="click-info">
 
-            <div id="totalClicks">
-                TOTAL CLICKS: 0
-            </div>
+    <div id="clickText">
+        0 / 10 CLICKS
+    </div>
 
-        </div>
+    <div class="progress-frame">
+        <div
+            class="progress"
+            id="progress"
+        ></div>
+    </div>
+
+    <div id="totalClicks">
+        TOTAL CLICKS: 0
+    </div>
+
+</div>
 
     </main>
 

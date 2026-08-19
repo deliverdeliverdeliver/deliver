@@ -1727,7 +1727,66 @@ input {
 </div>
 
 
+<!-- =====================================
+     SHOP
+===================================== -->
 
+<div
+    class="modal-overlay"
+    id="shopModal"
+>
+    <div class="modal-window shop-window">
+
+        <div class="modal-title">
+            <span>DELIVER SHOP</span>
+
+            <button
+                class="close"
+                onclick="closeModal('shopModal')"
+            >
+                X
+            </button>
+        </div>
+
+        <div class="modal-content">
+
+            <div class="shop-header">
+                <span>NETWORK STORE</span>
+                <span id="shopCredits">CREDITS: 0</span>
+            </div>
+
+            <div class="shop-tabs">
+                <button
+                    class="retro-button"
+                    onclick="loadShopCategory('all')"
+                >
+                    ALL
+                </button>
+
+                <button
+                    class="retro-button"
+                    onclick="loadShopCategory('cursor')"
+                >
+                    CURSORS
+                </button>
+
+                <button
+                    class="retro-button"
+                    onclick="loadShopCategory('background')"
+                >
+                    BACKGROUNDS
+                </button>
+            </div>
+
+            <div
+                class="shop-content"
+                id="shopContent"
+            ></div>
+
+        </div>
+
+    </div>
+</div>
 
 
 

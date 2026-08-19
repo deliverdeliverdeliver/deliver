@@ -1069,6 +1069,97 @@ input {
 
     letter-spacing: 1px;
 }
+    /* =====================================
+   Y2K BACKGROUND DETAILS
+===================================== */
+
+#game {
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(0, 80, 255, 0.12),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 80% 70%,
+            rgba(255, 0, 180, 0.08),
+            transparent 30%
+        ),
+        linear-gradient(
+            rgba(255,255,255,0.018) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.018) 1px,
+            transparent 1px
+        ),
+        #0d0d0f;
+
+    background-size:
+        auto,
+        auto,
+        32px 32px,
+        32px 32px,
+        auto;
+}
+
+
+/* Hintergrund-Deko links */
+#game::before {
+    content:
+        "C:\\DELIVER\\SYSTEM\A"
+        "STATUS: ONLINE\A"
+        "PACKETS: READY\A"
+        "\A"
+        "[ INTERNET ]\A"
+        "[ NETWORK  ]\A"
+        "[ STORAGE  ]";
+
+    white-space: pre;
+
+    position: fixed;
+    left: 28px;
+    top: 120px;
+
+    color: rgba(120, 255, 170, 0.16);
+
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    letter-spacing: 1px;
+
+    pointer-events: none;
+}
+
+
+/* Hintergrund-Deko rechts */
+#game::after {
+    content:
+        "DELIVER NETWORK\A"
+        "NODE 01\A"
+        "\A"
+        "56K MODEM\A"
+        "CONNECTED\A"
+        "\A"
+        "00:00:56";
+
+    white-space: pre;
+
+    position: fixed;
+    right: 32px;
+    top: 145px;
+
+    text-align: right;
+
+    color: rgba(120, 170, 255, 0.15);
+
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.7;
+
+    pointer-events: none;
+}
     
 </style>
 

@@ -3045,52 +3045,38 @@ window.openUsers = async function () {
             };
 
 
-        /* =========================
-           GRUNDWERTE
-        ========================= */
-
         const uniqueItems =
-            inventory.length;
+    inventory.length;
 
-        const totalItems =
-            inventory.reduce(
-                (sum, row) =>
-                    sum + (row.amount || 0),
-                0
-            );
+const totalItems =
+    inventory.reduce(
+        (sum, row) =>
+            sum + (row.amount || 0),
+        0
+    );
 
-        const inventoryValue =
-            inventory.reduce(
-                (sum, row) => {
+const inventoryValue =
+    inventory.reduce(
+        (sum, row) => {
 
-                    const value =
-                        row.items?.item_value || 0;
+            const value =
+                row.items?.item_value || 0;
 
-                    const amount =
-                        row.amount || 0;
+            const amount =
+                row.amount || 0;
 
-                    return sum + (value * amount);
+            return sum + (value * amount);
 
-                },
-                0
-            );
-
-       const collectionPercent =
-    totalAvailableItems > 0
-    ? Math.round(
-        (
-            uniqueItems /
-            totalAvailableItems
-        ) * 100
-    )
-    : 0;
+        },
+        0
+    );
 
 
-        /* =========================
-           RARITY COLLECTION
-        ========================= */
+/* =========================
+   ALLE VERFÜGBAREN ITEMS
+========================= */
 
-        const itemsResponse = await fetch(
+const itemsResponse = await fetch(
     `${SUPABASE_URL}/rest/v1/items?select=id,rarity`,
     {
         headers: {
@@ -3106,10 +3092,32 @@ if (!itemsResponse.ok) {
     );
 }
 
-const items = await itemsResponse.json();
+const items =
+    await itemsResponse.json();
 
-        
-totalAvailableItems = items.length;
+
+totalAvailableItems =
+    items.length;
+
+
+/* =========================
+   COLLECTION %
+========================= */
+
+const collectionPercent =
+    totalAvailableItems > 0
+        ? Math.round(
+            (
+                uniqueItems /
+                totalAvailableItems
+            ) * 100
+        )
+        : 0;
+
+
+/* =========================
+   GESAMTZAHL PRO RARITY
+========================= */
 
 rarityTotals = {
     common: 0,
@@ -3123,18 +3131,20 @@ rarityTotals = {
 items.forEach(item => {
 
     if (
-        rarityTotals[
-            item.rarity
-        ] !== undefined
+        rarityTotals[item.rarity]
+        !== undefined
     ) {
-        rarityTotals[
-            item.rarity
-        ]++;
+        rarityTotals[item.rarity]++;
     }
 
 });
 
-        const rarityStats = {
+
+/* =========================
+   BESITZ PRO RARITY
+========================= */
+
+const rarityStats = {
     common: 0,
     uncommon: 0,
     rare: 0,
@@ -3142,20 +3152,23 @@ items.forEach(item => {
     legendary: 0,
     mythic: 0
 };
-        
-        inventory.forEach(row => {
 
-            const rarity =
-                row.items?.rarity;
+inventory.forEach(row => {
 
-            if (
-                rarity &&
-                rarityStats[rarity] !== undefined
-            ) {
-                rarityStats[rarity]++;
-            }
+    const rarity =
+        row.items?.rarity;
 
-        });
+    if (
+        rarity &&
+        rarityStats[rarity]
+        !== undefined
+    ) {
+        rarityStats[rarity]++;
+    }
+
+});
+
+
 
 
         /* =========================

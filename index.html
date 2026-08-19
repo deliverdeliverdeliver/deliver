@@ -1535,7 +1535,7 @@ input {
    <div class="modal-content">
 
     <div id="collectionStats" class="collection-stats">
-        COLLECTION: 0 / 50
+        COLLECTION: 0 / ${totalAvailableItems}
     </div>
        <div
     class="modal-overlay"
@@ -3065,24 +3065,45 @@ window.openUsers = async function () {
                 0
             );
 
-        const collectionPercent =
-            Math.round(
-                (uniqueItems / 50) * 100
-            );
+       const collectionPercent =
+    totalAvailableItems > 0
+    ? Math.round(
+        (
+            uniqueItems /
+            totalAvailableItems
+        ) * 100
+    )
+    : 0;
 
 
         /* =========================
            RARITY COLLECTION
         ========================= */
+const totalAvailableItems =
+    items.length;
 
-        const rarityStats = {
-            common: 0,
-            uncommon: 0,
-            rare: 0,
-            epic: 0,
-            legendary: 0,
-            mythic: 0
-        };
+const rarityTotals = {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0
+};
+
+items.forEach(item => {
+
+    if (
+        rarityTotals[
+            item.rarity
+        ] !== undefined
+    ) {
+        rarityTotals[
+            item.rarity
+        ]++;
+    }
+
+});
 
         inventory.forEach(row => {
 
@@ -3125,7 +3146,7 @@ window.openUsers = async function () {
 
                 <span>COLLECTION</span>
                 <strong>
-                    ${uniqueItems} / 50
+                    ${uniqueItems} / ${totalAvailableItems}
                 </strong>
 
                 <span>COLLECTION %</span>
@@ -3380,7 +3401,7 @@ window.openPublicProfile = async function (
 
         const collectionPercent =
             Math.round(
-                (uniqueItems / 50) * 100
+                (uniqueItems / ${totalAvailableItems}) * 100
             );
 
         const rarityStats = {
@@ -3425,7 +3446,7 @@ window.openPublicProfile = async function (
 
                 <span>COLLECTION</span>
                 <strong>
-                    ${uniqueItems} / 50
+                    ${uniqueItems} / ${totalAvailableItems}
                 </strong>
 
                 <span>COLLECTION %</span>
@@ -3894,7 +3915,7 @@ window.sendChatMessage = async function () {
                 <br>
 
                 COLLECTION:
-                <span id="statsCollection">0 / 50</span>
+                <span id="statsCollection">0 / ${totalAvailableItems}</span>
 
                 <br>
 

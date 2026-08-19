@@ -3433,14 +3433,14 @@ window.openPublicProfile = async function (
         ? Math.round((uniqueItems / totalAvailableItems) * 100)
         : 0;
 
-        const rarityStats = {
-            common: 0,
-            uncommon: 0,
-            rare: 0,
-            epic: 0,
-            legendary: 0,
-            mythic: 0
-        };
+        rarityTotals = {
+    common: 0,
+    uncommon: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0
+};
 
         inventory.forEach(row => {
 

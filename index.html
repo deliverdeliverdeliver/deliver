@@ -3399,10 +3399,10 @@ window.openPublicProfile = async function (
                 0
             );
 
-        const collectionPercent =
-            Math.round(
-                (uniqueItems / ${totalAvailableItems}) * 100
-            );
+       const collectionPercent =
+    totalAvailableItems > 0
+        ? Math.round((uniqueItems / totalAvailableItems) * 100)
+        : 0;
 
         const rarityStats = {
             common: 0,

@@ -3455,18 +3455,9 @@ window.openPublicProfile = async function (
         ? Math.round((uniqueItems / totalAvailableItems) * 100)
         : 0;
 
-        console.log("uniqueItems:", uniqueItems);
-console.log("totalAvailableItems:", totalAvailableItems);
-console.log("collectionPercent:", collectionPercent);
+  
 
-        rarityTotals = {
-    common: 0,
-    uncommon: 0,
-    rare: 0,
-    epic: 0,
-    legendary: 0,
-    mythic: 0
-};
+
 
         const rarityStats = {
     common: 0,
@@ -3540,32 +3531,32 @@ inventory.forEach(row => {
 
                 <div>
                     COMMON:
-                    ${rarityStats.common} / 18
+${rarityStats.common} / ${rarityTotals.common}
                 </div>
 
                 <div>
                     UNCOMMON:
-                    ${rarityStats.uncommon} / 12
+                    ${rarityStats.uncommon} / ${rarityTotals.uncommon}
                 </div>
 
                 <div>
                     RARE:
-                    ${rarityStats.rare} / 9
+                    ${rarityStats.rare} / ${rarityTotals.rare}
                 </div>
 
                 <div>
                     EPIC:
-                    ${rarityStats.epic} / 6
+                    ${rarityStats.epic} / ${rarityTotals.epic}
                 </div>
 
                 <div>
                     LEGENDARY:
-                    ${rarityStats.legendary} / 4
+                    ${rarityStats.legendary} / ${rarityTotals.legendary}
                 </div>
 
                 <div>
                     MYTHIC:
-                    ${rarityStats.mythic} / 1
+                    ${rarityStats.mythic} / ${rarityTotals.mythic}
                 </div>
 
             </div>

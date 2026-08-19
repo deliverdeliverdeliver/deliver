@@ -1274,6 +1274,100 @@ input {
 
     pointer-events: none;
 }
+
+    /* =====================================
+   SHOP
+===================================== */
+
+.shop-window {
+    width: 760px;
+    max-width: 92vw;
+}
+
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+#shopCredits {
+    background: #fff;
+    border:
+        2px inset #dfdfdf;
+
+    padding: 6px 12px;
+}
+
+.shop-tabs {
+    display: flex;
+    gap: 6px;
+
+    margin:
+        14px 0
+        16px 0;
+}
+
+.shop-content {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.shop-item {
+    background: #ddd;
+
+    border:
+        2px outset #fff;
+
+    padding: 12px;
+
+    min-height: 150px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-item-name {
+    font-weight: bold;
+    font-size: 14px;
+
+    margin-bottom: 8px;
+}
+
+.shop-item-description {
+    font-size: 12px;
+
+    line-height: 1.4;
+
+    flex: 1;
+
+    margin-bottom: 12px;
+}
+
+.shop-item-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.shop-item-price {
+    font-weight: bold;
+}
+
+.shop-item button {
+    min-width: 80px;
+}
     
 </style>
 
@@ -3609,6 +3703,153 @@ if (
 
 }
 
+    /* =====================================
+   SHOP
+===================================== */
+
+let shopCategory = "package";
+
+
+window.openShop =
+async function () {
+
+    document.getElementById(
+        "shopModal"
+    ).style.display = "flex";
+
+    await loadShop();
+
+};
+
+
+window.setShopCategory =
+async function (category) {
+
+    shopCategory =
+        category;
+
+    document
+        .querySelectorAll(
+            "[data-shop-category]"
+        )
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.shopCategory === category
+            );
+
+        });
+
+    await loadShop();
+
+};
+
+
+async function loadShop() {
+
+    const content =
+        document.getElementById(
+            "shopContent"
+        );
+
+    content.innerHTML =
+        "LOADING STORE...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/shop_items` +
+                `?category=eq.${shopCategory}` +
+                `&select=id,name,price,description,cosmetic_key,sort_order` +
+                `&order=sort_order.asc`,
+                {
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization":
+                            `Bearer ${accessToken}`
+                    }
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `SHOP HTTP ${response.status}`
+            );
+
+        }
+
+
+        const shopItems =
+            await response.json();
+
+
+        if (!shopItems.length) {
+
+            content.innerHTML =
+                "NO PRODUCTS FOUND.";
+
+            return;
+
+        }
+
+
+        content.innerHTML =
+            shopItems.map(item => `
+
+                <div class="shop-item">
+
+                    <div class="shop-item-name">
+                        ${escapeHtml(item.name)}
+                    </div>
+
+                    <div class="shop-item-description">
+                        ${escapeHtml(
+                            item.description || ""
+                        )}
+                    </div>
+
+                    <div class="shop-item-bottom">
+
+                        <div class="shop-item-price">
+                            ${Number(item.price)
+                                .toLocaleString("de-DE")}
+                            CR
+                        </div>
+
+                        <button
+                            class="retro-button"
+                            disabled
+                        >
+                            BUY
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `).join("");
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Shop error:",
+            error
+        );
+
+        content.innerHTML =
+            "STORE ERROR.";
+
+    }
+
+}
+    
 /* =====================================
    GLOBAL CHAT
 ===================================== */
@@ -4119,5 +4360,66 @@ window.sendChatMessage = async function () {
     </div>
 </div>
 
+    <div class="modal-title">
+
+            <span>DELIVER STORE</span>
+
+            <button
+                class="close"
+                onclick="closeModal('shopModal')"
+            >
+                X
+            </button>
+
+        </div>
+
+        <div class="modal-content">
+
+            <div class="shop-header">
+
+                <div>
+                    DELIVER NETWORK STORE
+                </div>
+
+                <div id="shopCredits">
+                    CREDITS: 0
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="shop-tabs">
+
+                <button
+                    class="retro-button active"
+                    data-shop-category="package"
+                    onclick="setShopCategory('package')"
+                >
+                    PACKAGES
+                </button>
+
+                <button
+                    class="retro-button"
+                    data-shop-category="background"
+                    onclick="setShopCategory('background')"
+                >
+                    BACKGROUNDS
+                </button>
+
+            </div>
+
+            <div
+                id="shopContent"
+                class="shop-content"
+            >
+                LOADING STORE...
+            </div>
+
+        </div>
+
+    </div>
+</div>
+    
 </body>
 </html>
